@@ -59,7 +59,7 @@ def read_accessions(fnames):
 
 def parse(raw):
     """Return the accession number contained in the raw string of a fasta."""
-    # A quite sui-generis parser to get the access numbers.
+    # A quite sui-generis parser to get the accession numbers.
 
     # For example, with the given inputs on the left, it returns...
     #   X64695.1.gene9                 ->  X64695.1
