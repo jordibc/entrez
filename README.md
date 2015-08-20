@@ -30,3 +30,6 @@ References:
 - E-Utilities: http://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.The_Nine_Eutilities_in_Brief
 - Retrieving large datasets: http://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large
 - Converting accession numbers: http://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_2_Converting_access
+
+
+[![Join the chat at https://gitter.im/jordibc/entrez](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jordibc/entrez?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
