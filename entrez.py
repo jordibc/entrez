@@ -1,6 +1,6 @@
 """Simple interface to the amazing NCBI databases (Entrez).
 
-equery(tool, ...) - Return the http response of a query.
+equery(tool[, ...]) - Return the http response of a query.
 eapply(db, term, tool[, db2, retmax, ...]) - Yield the output of
                     applying a tool over the results of a query.
 
