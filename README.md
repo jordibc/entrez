@@ -1,7 +1,7 @@
 # Entrez - Call the NCBI E-utilities from Python
 
-A simple Python interface to the amazing biological databases kept at the NCBI.
-It uses the Entrez Programming Utilities (E-utilities), nine server-side
+A simple Python interface to **query the biological databases** kept at the NCBI.
+It uses the Entrez Programming Utilities (*E-utilities*), nine server-side
 programs that access the Entrez query and database system at the National Center
 for Biotechnology Information (NCBI).
 
@@ -25,7 +25,7 @@ for line in equery(tool='fetch', db='snp', id='3000'):
 ```
 
  * Get a summary of nucleotides related to accession numbers
-   NC_010611.1 and EU477409.1:
+   `NC_010611.1` and `EU477409.1`:
 
 ```python
 for line in eapply(db='nucleotide',
