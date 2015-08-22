@@ -1,8 +1,8 @@
 A simple Python interface to the amazing NCBI databases (Entrez).
 
-The interface is in the file ``entrez.py``. It contains two functions:
+The interface is in the file ``entrez.py``. It contains two generators:
 
-- ``equery(tool[, ...])`` - Return the http response of a query.
+- ``equery(tool[, ...])`` - Yield the response of a query with the given tool.
 - ``eapply(db, term, tool[, db2, retmax, ...])`` - Yield the output of
   applying a tool over the results of a query.
 
@@ -15,7 +15,7 @@ Examples of use:
   http://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
 
       for line in equery(tool='fetch', db='snp', id='3000'):
-          print(line.rstrip())
+          print(line)
 
 - Get a summary of nucleotides related to accession numbers
   NC_010611.1 and EU477409.1:
@@ -23,7 +23,7 @@ Examples of use:
       for line in eapply(db='nucleotide',
                          term='NC_010611.1[accs] OR EU477409.1[accs]',
                          tool='summary'):
-          print(line.rstrip())
+          print(line)
 
 References:
 

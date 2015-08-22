@@ -1,8 +1,8 @@
 """Simple interface to the amazing NCBI databases (Entrez).
 
-equery(tool[, ...]) - Return the http response of a query.
-eapply(db, term, tool[, db2, retmax, ...]) - Yield the output of
-                    applying a tool over the results of a query.
+equery(tool[, ...]) - Yield the response of a query with the given tool.
+eapply(db, term, tool[, db2, retmax, ...]) - Yield the response of applying
+                                        a tool over the results of a query.
 
 Examples of use:
 
@@ -10,7 +10,7 @@ Examples of use:
   http://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm
 
   for line in equery(tool='fetch', db='snp', id='3000'):
-      print(line.rstrip())
+      print(line)
 
 * Get a summary of nucleotides related to accession numbers
   NC_010611.1 and EU477409.1
@@ -18,7 +18,7 @@ Examples of use:
   for line in eapply(db='nucleotide',
                      term='NC_010611.1[accs] OR EU477409.1[accs]',
                      tool='summary'):
-      print(line.rstrip())
+      print(line)
 
 """
 
@@ -32,7 +32,7 @@ Examples of use:
 #     /NBK25497/#chapter2.The_Nine_Eutilities_in_Brief
 #
 
-import re
+from re import search
 try:
     from urllib import urlencode
     from urllib2 import urlopen
@@ -56,7 +56,8 @@ def equery(tool='search', **params):
 
     # Make a POST request and return the http response object.
     url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
-    return urlopen(url, urlencode(params).encode('ascii'))
+    for line_bytes in urlopen(url, urlencode(params).encode('ascii')):
+        yield line_bytes.decode('ascii').rstrip()
 
 
 def eapply(db, term, tool, db2=None, retmax=500, **params):
@@ -73,19 +74,21 @@ def eapply(db, term, tool, db2=None, retmax=500, **params):
       retmax: Chunk size of the reading from the NCBI servers.
       params: Extra parameters to use with the E-Utility.
     """
-    # Use the search tool with usehistory='y' to select the elements.
-    output = equery(tool='search', usehistory='y',
-                    db=db, term=term).read().decode('ascii')
-
-    web = re.search('<WebEnv>(\S+)</WebEnv>', output).groups()[0]
-    key = re.search('<QueryKey>(\d+)</QueryKey>', output).groups()[0]
-    count_match = re.search('<Count>(\d+)</Count>', output)
-    count = int(count_match.groups()[0]) if count_match else 1
-    # Now we can use web and key to reference the results of the search.
+    # Use the search tool with usehistory='y' to select the elements,
+    # and keep the values of WebEnv, QueryKey and Count in the fields dict.
+    fields = {}
+    for line in equery(tool='search', usehistory='y', db=db, term=term):
+        for k in ['WebEnv', 'QueryKey', 'Count']:
+            if k not in fields and '<%s>' % k in line:
+                fields[k] = search('<%s>(\S+)</%s>' % (k, k), line).groups()[0]
+    # Now we can use the values of WebEnv and QueryKey to reference
+    # the results of the search.
 
     # Ask for the results of using tool over the selected elements, in
     # batches of retmax each.
-    for retstart in range(0, count, retmax):
-        for line in equery(tool=tool, db=(db2 or db), query_key=key, WebEnv=web,
+    for retstart in range(0, int(fields.get('Count', '1')), retmax):
+        for line in equery(tool=tool, db=(db2 or db),
+                           WebEnv=fields['WebEnv'],
+                           query_key=fields['QueryKey'],
                            retstart=retstart, retmax=retmax, **params):
-            yield line.decode('ascii')
+            yield line
