@@ -14,7 +14,7 @@ The interface is in the file ``entrez.py``. It contains two generators:
 There is also a little program ``acc2gi.py`` that uses the library to
 convert accession numbers into GIs.
 
-## Examples of use:
+### Examples of use:
 
 - Fetch information for SNP with id 3000, as in the example of
   http://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
@@ -34,7 +34,7 @@ for line in eapply(db='nucleotide',
     print(line)
 ```
 
-References:
+### References:
 
  * [Introduction to the E-utilities](http://www.ncbi.nlm.nih.gov/books/NBK25497/)
  * [Retrieving large datasets](http://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
