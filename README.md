@@ -1,24 +1,24 @@
 A simple Python interface to the amazing NCBI databases (Entrez).
 
-The interface is in file `entrez.py`. It contains::
+The interface is in the file ``entrez.py``. It contains two functions:
 
-- `equery(tool, ...)` - Return the http response of a query.
-- `eapply(db, term, tool[, db2, retmax, ...])` - Yield the output of
+- ``equery(tool[, ...])`` - Return the http response of a query.
+- ``eapply(db, term, tool[, db2, retmax, ...])`` - Yield the output of
   applying a tool over the results of a query.
 
-There is also a little program `acc2gi.py` that uses the library to
+There is also a little program ``acc2gi.py`` that uses the library to
 convert accession numbers into GIs.
 
 Examples of use:
 
 - Fetch information for SNP with id 3000, as in the example of
-  http://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm::
+  http://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
 
       for line in equery(tool='fetch', db='snp', id='3000'):
           print(line.rstrip())
 
 - Get a summary of nucleotides related to accession numbers
-  NC_010611.1 and EU477409.1::
+  NC_010611.1 and EU477409.1:
 
       for line in eapply(db='nucleotide',
                          term='NC_010611.1[accs] OR EU477409.1[accs]',
