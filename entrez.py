@@ -28,7 +28,7 @@ Examples of use:
 #     /NBK25498/#chapter3.Application_2_Converting_access
 # * Retrieving large datasets:
 #     /NBK25498/#chapter3.Application_3_Retrieving_large
-# * E-Utilities:
+# * E-utilities:
 #     /NBK25497/#chapter2.The_Nine_Eutilities_in_Brief
 #
 
@@ -69,10 +69,10 @@ def eapply(db, term, tool, db2=None, retmax=500, **params):
     Args:
       db: Database where the query is done.
       term: Query term that selects elements to process later.
-      tool: E-Utilitiy that is used on the selected elements.
+      tool: E-utilitiy that is used on the selected elements.
       db2: Database where tool is applied. If None, it's the same as db.
       retmax: Chunk size of the reading from the NCBI servers.
-      params: Extra parameters to use with the E-Utility.
+      params: Extra parameters to use with the E-utility.
     """
     # Use the search tool with usehistory='y' to select the elements,
     # and keep the values of WebEnv, QueryKey and Count in the fields dict.
