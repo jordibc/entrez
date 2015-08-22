@@ -48,8 +48,6 @@ _valid_params = ('db term id usehistory query_key WebEnv '
 
 def equery(tool='search', **params):
     """Return http response for the requested E-utility query."""
-    # Do a POST request to the desired Entrez tool.
-
     # First make some basic checks.
     assert tool in _valid_tools, 'Invalid web tool: %s' % tool
     for k in params:
@@ -59,7 +57,6 @@ def equery(tool='search', **params):
     # Make a POST request and return the http response object.
     url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
     return urlopen(url, urlencode(params).encode('ascii'))
-    # TODO: handle errors gracefully.
 
 
 def eapply(db, term, tool, db2=None, retmax=500, **params):
