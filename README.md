@@ -34,6 +34,18 @@ for line in eapply(db='nucleotide',
     print(line)
 ```
 
+ * Download all chimpanzee mRNA sequences in FASTA format (our version
+   of the [sample application
+   3](http://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)):
+
+```python
+with open('chimp.fna', 'w') as fout:
+    for line in eapply(db='nucleotide',
+                       term='chimpanzee[orgn] AND biomol mrna[prop]',
+                       tool='fetch', rettype='fasta'):
+        fout.write(line + '\n')
+```
+
 ### References
 
  * [Introduction to the E-utilities](http://www.ncbi.nlm.nih.gov/books/NBK25497/)
