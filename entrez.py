@@ -54,7 +54,7 @@ def equery(tool='search', **params):
         assert k in _valid_params, 'Unknown parameter: %s' % k
     # TODO: we could really check better than this...
 
-    # Make a POST request and return the http response object.
+    # Make a POST request and yield the lines of the response.
     url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
     for line_bytes in urlopen(url, urlencode(params).encode('ascii')):
         yield line_bytes.decode('ascii').rstrip()
