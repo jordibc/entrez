@@ -42,7 +42,7 @@ except ImportError:  # Python 3
 
 
 _valid_tools = 'info search post summary fetch link gquery citmatch'.split()
-_valid_params = ('db term id usehistory query_key WebEnv '
+_valid_params = ('db dbfrom term id usehistory query_key WebEnv '
                  'rettype retmode retstart retmax').split()
 
 
@@ -57,7 +57,7 @@ def equery(tool='search', **params):
     # Make a POST request and yield the lines of the response.
     url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
     for line_bytes in urlopen(url, urlencode(params).encode('ascii')):
-        yield line_bytes.decode('ascii').rstrip()
+        yield line_bytes.decode('ascii', errors='ignore').rstrip()
 
 
 def eapply(db, term, tool, db2=None, retmax=500, **params):
