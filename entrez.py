@@ -47,7 +47,7 @@ _valid_params = ('db dbfrom term id usehistory query_key WebEnv '
 
 
 def equery(tool='search', **params):
-    """Return http response for the requested E-utility query."""
+    """Yield the response of a query with the given tool."""
     # First make some basic checks.
     assert tool in _valid_tools, 'Invalid web tool: %s' % tool
     for k in params:
