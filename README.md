@@ -8,8 +8,16 @@ for Biotechnology Information (NCBI).
 The interface is in the file ``entrez.py``. It contains two generators:
 
  * ``equery(tool[, ...])`` - Yield the response of a query with the given tool.
- * ``eapply(db, term, tool[, db2, retmax, ...])`` - Yield the output of
-   applying a tool over the results of a query.
+ * ``eselect(tool, db[, ...])`` - Return a dict that references the elements
+    selected with tool over database db.
+ * ``eapply(tool, db, elems[, retmax, ...])`` - Yield the response of applying
+    a tool on db for the selected elements.
+ * ``esearch(db, term, tool, db2[, ...])`` - Yield the response of applying a
+    tool over the results of a search query.
+
+There is a program ``sample_applications.py`` that shows how the [sample
+applications of the E-utilities](http://www.ncbi.nlm.nih.gov/books/NBK25498)
+would look like with this interface.
 
 There is also a little program ``acc2gi.py`` that uses the library to
 convert accession numbers into GIs.
@@ -28,9 +36,9 @@ for line in equery(tool='fetch', db='snp', id='3000'):
    `NC_010611.1` and `EU477409.1`:
 
 ```python
-for line in eapply(db='nucleotide',
-                   term='NC_010611.1[accs] OR EU477409.1[accs]',
-                   tool='summary'):
+for line in esearch(db='nucleotide',
+                    term='NC_010611.1[accs] OR EU477409.1[accs]',
+                    tool='summary'):
     print(line)
 ```
 
@@ -40,9 +48,9 @@ for line in eapply(db='nucleotide',
 
 ```python
 with open('chimp.fna', 'w') as fout:
-    for line in eapply(db='nucleotide',
-                       term='chimpanzee[orgn] AND biomol mrna[prop]',
-                       tool='fetch', rettype='fasta'):
+    for line in esearch(db='nucleotide',
+                        term='chimpanzee[orgn] AND biomol mrna[prop]',
+                        tool='fetch', rettype='fasta'):
         fout.write(line + '\n')
 ```
 
