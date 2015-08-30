@@ -112,8 +112,8 @@ if __name__ == '__main__':
     # Let the user choose which sample to run.
     samples = [sample_1, sample_2, sample_3]
     while True:
-        try:
-            choice = raw_input('Sample to run (1-%d): ' % len(samples))
-            samples[int(choice) - 1]()
-        except:
+        choice = raw_input('Sample to run (1-%d): ' % len(samples))
+        if not choice.isdigit() or not 1 <= int(choice) <= len(samples):
+            print('Bye!')
             break
+        samples[int(choice) - 1]()
