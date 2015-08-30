@@ -104,13 +104,38 @@ def sample_3():
         print(line)
 
 
+def sample_4():
+    """ESearch - ELink - ESummary/EFetch
+
+    Download protein FASTA records linked to abstracts published
+    in 2009 that are indexed in MeSH for both asthma and leukotrienes.
+    """
+    # Input: Entrez text query in database pubmed.
+    query = 'asthma[mesh] AND leukotrienes[mesh] AND 2009[pdat]'
+
+    elems_pubmed = eselect(tool='search', db='pubmed', term=query)
+
+    elems_protein = eselect(tool='link', dbfrom='pubmed', db='protein',
+                            elems=elems_pubmed,
+                            linkname='pubmed_protein', cmd='neighbor_history')
+
+    # Linked XML Document Summaries from database protein.
+    for line in eapply(tool='summary', db='protein', elems=elems_protein):
+        print(line)
+
+    # Formatted data records of selected proteins (FASTA in this case).
+    for line in eapply(tool='fetch', db='protein', elems=elems_protein,
+                       rettype='fasta'):
+        print(line)
+
+
 # TODO: all the other sample applications.
 
 
 
 if __name__ == '__main__':
     # Let the user choose which sample to run.
-    samples = [sample_1, sample_2, sample_3]
+    samples = [sample_1, sample_2, sample_3, sample_4]
     while True:
         choice = raw_input('Sample to run (1-%d): ' % len(samples))
         if not choice.isdigit() or not 1 <= int(choice) <= len(samples):
