@@ -1,7 +1,7 @@
 """Simple interface to the amazing NCBI databases (Entrez).
 
 equery(tool[, ...]) - Yield the response of a query with the given tool.
-eselect(tool, db[, ...]) - Return a dict that references the elements
+eselect(tool, db[, elems, ...]) - Return a dict that references the elements
     selected with tool over database db.
 eapply(tool, db, elems[, retmax, ...]) - Yield the response of applying
     a tool on db for the selected elements.
@@ -64,16 +64,21 @@ def equery(tool='search', **params):
         yield line_bytes.decode('ascii', errors='ignore').rstrip()
 
 
-def eselect(tool, db, **params):
+def eselect(tool, db, elems=None, **params):
     """Use tool on db to select elements and return dict for future queries."""
+    # If there are previous elements selected, take them into account.
+    if elems and 'WebEnv' in elems:
+        params['WebEnv'] = elems['WebEnv']
+    if elems and 'QueryKey' in elems:
+        params['query_key'] = elems['QueryKey']
     # Use tool with usehistory='y' to select the elements,
-    # and keep the values of WebEnv, QueryKey and Count in the elems dict.
-    elems = {}
+    # and keep the values of WebEnv, QueryKey and Count in the elems_new dict.
+    elems_new = {}
     for line in equery(tool=tool, usehistory='y', db=db, **params):
         for k in ['WebEnv', 'QueryKey', 'Count']:
-            if k not in elems and '<%s>' % k in line:
-                elems[k] = search('<%s>(\S+)</%s>' % (k, k), line).groups()[0]
-    return elems
+            if k not in elems_new and '<%s>' % k in line:
+                elems_new[k] = search('<%s>(\S+)</%s>' % (k, k), line).groups()[0]
+    return elems_new
 
 
 def eapply(tool, db, elems, retmax=500, **params):
