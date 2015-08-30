@@ -46,7 +46,7 @@ except ImportError:  # Python 3
 
 
 _valid_tools = 'info search post summary fetch link gquery citmatch'.split()
-_valid_params = ('db dbfrom term id usehistory query_key WebEnv '
+_valid_params = ('db dbfrom term id cmd linkname usehistory query_key WebEnv '
                  'rettype retmode retstart retmax').split()
 
 
