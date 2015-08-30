@@ -40,7 +40,7 @@ def main():
 def print_acc2gi(accessions):
     """Print GIs corresponding to the given accession numbers."""
     term = ' OR '.join(a + '[accn]' for a in accessions)
-    for line in entrez.esearch(db='nucleotide', term=term, tool='summary'):
+    for line in entrez.on_search(db='nucleotide', term=term, tool='summary'):
         if 'Name="Extra"' in line and any(a in line for a in accessions):
             _, gi, _, acc, _ = line.split('|', 4)
             print('%18s  ->  %s' % (acc, gi))

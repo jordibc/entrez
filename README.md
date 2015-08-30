@@ -12,7 +12,7 @@ The interface is in the file ``entrez.py``. It contains two generators:
     selected with tool over database db.
  * ``eapply(tool, db, elems[, retmax, ...])`` - Yield the response of applying
     a tool on db for the selected elements.
- * ``esearch(db, term, tool, db2[, ...])`` - Yield the response of applying a
+ * ``on_search(db, term, tool[, db2, ...])`` - Yield the response of applying a
     tool over the results of a search query.
 
 There is a program ``sample_applications.py`` that shows how the [sample
@@ -36,9 +36,9 @@ for line in equery(tool='fetch', db='snp', id='3000'):
    `NC_010611.1` and `EU477409.1`:
 
 ```python
-for line in esearch(db='nucleotide',
-                    term='NC_010611.1[accs] OR EU477409.1[accs]',
-                    tool='summary'):
+for line in on_search(db='nucleotide',
+                      term='NC_010611.1[accs] OR EU477409.1[accs]',
+                      tool='summary'):
     print(line)
 ```
 
@@ -48,9 +48,9 @@ for line in esearch(db='nucleotide',
 
 ```python
 with open('chimp.fna', 'w') as fout:
-    for line in esearch(db='nucleotide',
-                        term='chimpanzee[orgn] AND biomol mrna[prop]',
-                        tool='fetch', rettype='fasta'):
+    for line in on_search(db='nucleotide',
+                          term='chimpanzee[orgn] AND biomol mrna[prop]',
+                          tool='fetch', rettype='fasta'):
         fout.write(line + '\n')
 ```
 
