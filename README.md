@@ -5,7 +5,7 @@ It uses the Entrez Programming Utilities (*E-utilities*), nine server-side
 programs that access the Entrez query and database system at the National Center
 for Biotechnology Information (NCBI).
 
-The interface is in the file ``entrez.py``. It contains two generators:
+The interface is in the file ``entrez.py``. It contains:
 
  * ``equery(tool[, ...])`` - Yield the response of a query with the given tool.
  * ``eselect(tool, db[, ...])`` - Return a dict that references the elements
