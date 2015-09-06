@@ -114,7 +114,7 @@ def on_search(db, term, tool, db2=None, **params):
       term: Query term that selects elements to process later.
       tool: E-utilitiy that is used on the selected elements.
       db2: Database where tool is applied. If None, it's the same as db.
-       params: Extra parameters to use with the E-utility.
+      params: Extra parameters to use with the E-utility.
      """
     # Convenience function, it is used so often.
     for line in eapply(elems=eselect(tool='search', db=db, term=term),
