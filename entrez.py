@@ -88,7 +88,7 @@ def eapply(tool, db, elems, retmax=500, **params):
     apply tool on database db, and yield the output.
 
     Args:
-      tool: E-utilitiy that is used on the selected elements.
+      tool: E-utility that is used on the selected elements.
       db: Database where the tool is applied.
       elems: Dict with WebEnv and QueryKey of previously selected elements.
       retmax: Chunk size of the reading from the NCBI servers.
@@ -112,7 +112,7 @@ def on_search(db, term, tool, db2=None, **params):
     Args:
       db: Database where the query is done.
       term: Query term that selects elements to process later.
-      tool: E-utilitiy that is used on the selected elements.
+      tool: E-utility that is used on the selected elements.
       db2: Database where tool is applied. If None, it's the same as db.
       params: Extra parameters to use with the E-utility.
      """
