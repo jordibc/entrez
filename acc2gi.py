@@ -27,6 +27,7 @@ def main():
                         help='just check duplicate accession numbers')
     args = parser.parse_args()
 
+    # If in "check mode", just check for duplicate accession numbers and exit.
     if args.check:
         if not args.fastas:
             sys.exit('Missing fasta files to check.')
@@ -93,19 +94,22 @@ def parse(raw):
 
 def print_duplicates(fnames):
     """Print information about duplicate accession numbers in files."""
-    lines = []
+    full_names = []
     for fname in fnames:
-        lines += open(fname).readlines()
+        for line in open(fname):
+            if line.startswith('>'):
+                full_names.append(line.split()[0].strip('>'))
 
-    accessions = read_accessions(fnames)
-    seen = []
-    for i, a in enumerate(accessions):
-        if a in seen:
-            first = seen.index(a)
-            print('* %s seen at %d, first seen at %d:' % (a, i, first))
+    seen = {}  # dict, for each accession number says where it was first seen
+    for i, name in enumerate(full_names):
+        acc = parse(name)
+        if acc not in seen:
+            seen[acc] = i
+        else:
+            first = seen[acc]
+            print('* %s seen at %d, first seen at %d:' % (acc, i, first))
             for n in [first, i]:
-                print('%6d - %s' % (n, lines[2 * n].split()[0].strip('>')))
-        seen.append(a)
+                print('%6d - %s' % (n, full_names[n]))
 
 
 
