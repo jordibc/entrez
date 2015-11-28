@@ -30,11 +30,9 @@ def main():
 
     # Print the GIs and accession numbers for all accession numbers,
     # in groups of args.nreq numbers per request to the NCBI webservers.
-    start = 0
     total_requests = args.max if args.max > 0 else len(accessions)
-    while start < total_requests:
-        print_acc2gi(accessions[start:min(start + args.nreq, total_requests)])
-        start += args.nreq
+    for i in range(0, total_requests, args.nreq):
+        print_acc2gi(accessions[i:min(i + args.nreq, total_requests)])
 
 
 
