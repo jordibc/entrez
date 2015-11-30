@@ -71,6 +71,7 @@ def eselect(tool, db, elems=None, **params):
         params['WebEnv'] = elems['WebEnv']
     if elems and 'QueryKey' in elems:
         params['query_key'] = elems['QueryKey']
+
     # Use tool with usehistory='y' to select the elements,
     # and keep the values of WebEnv, QueryKey and Count in the elems_new dict.
     elems_new = {}

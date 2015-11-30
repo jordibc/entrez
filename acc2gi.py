@@ -34,13 +34,12 @@ def main():
         print_duplicates(args.fastas)
         sys.exit()
 
-    # Get accessions from the given list, or from the given files.
-    accessions = (args.accessions if args.accessions
-                  else read_accessions(args.fastas))
+    # Get accessions from the given list if given, or from the given files.
+    accessions = args.accessions or read_accesions(args.fastas)
 
     # Print the GIs and accession numbers for all accession numbers,
     # in groups of args.nreq numbers per request to the NCBI webservers.
-    total_requests = args.max if args.max > 0 else len(accessions)
+    total_requests = args.max if args.max >= 0 else len(accessions)
     for i in range(0, total_requests, args.nreq):
         print_acc2gi(accessions[i:min(i + args.nreq, total_requests)])
 
