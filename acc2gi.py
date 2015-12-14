@@ -35,7 +35,7 @@ def main():
         sys.exit()
 
     # Get accessions from the given list if given, or from the given files.
-    accessions = args.accessions or read_accesions(args.fastas)
+    accessions = args.accessions or read_accessions(args.fastas)
 
     # Print the GIs and accession numbers for all accession numbers,
     # in groups of args.nreq numbers per request to the NCBI webservers.
