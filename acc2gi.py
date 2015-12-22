@@ -50,7 +50,9 @@ def print_acc2gi(accessions):
     term = ' OR '.join(a + '[accn]' for a in accessions)
     for line in entrez.on_search(db='nucleotide', term=term, tool='summary'):
         if 'Name="Extra"' in line and any(a in line for a in accessions):
-            _, gi, _, acc, _ = line.split('|', 4)
+            gi = re.search('gi\|([0-9]+)\|', line).group(1)
+            acc = re.search('((emb)|(gb)|(ref)|(dbj))\|(?P<acc>\w+\.[0-9]+)\|',
+                            line).group('acc')
             print('%18s  ->  %s' % (acc, gi))
 
 
@@ -77,6 +79,7 @@ def parse(raw):
 
     if re.search('NC_\d+', raw):            # Eg: NC_013773
         return re.search('NC_\d+', raw).group()
+#    elif re.search('(?!fosA_.*?_)NZ_[A-Z0-9]+', raw):    # Eg: NZ_AGSO01000004.1
     elif re.search('NZ_[A-Z0-9]+', raw):    # Eg: NZ_AGSO01000004.1
         return re.search('NZ_[A-Z0-9]+', raw).group()
     elif '_' in raw:             # Eg: VanY-D_4_AY489045, dfrB3_1_FM877478
