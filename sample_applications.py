@@ -135,7 +135,7 @@ def sample_4():
 
 
 def application_1():
-    """Converting GI numbers to accession numbers.
+    """Sample Application 1: Converting GI numbers to accession numbers
 
     Starting with a list of nucleotide GI numbers, prepare a set of
     corresponding accession numbers.
@@ -152,7 +152,7 @@ def application_1():
 
 
 def application_2():
-    """Converting accession numbers to data.
+    """Sample Application 2: Converting accession numbers to data
 
     Starting with a list of protein accession numbers, return the sequences in
     FASTA format.
@@ -162,15 +162,13 @@ def application_2():
     query = ' OR '.join(a + '[accn]' for a in accs)
 
     # Output: FASTA data.
-    for line in entrez.on_search(db='nucleotide', term=query, tool='fetch',
-                                 db2='protein', rettype='fasta'):
+    for line in entrez.on_search(db='nuccore', term=query, tool='fetch',
+                                 db2='nuccore', rettype='fasta'):
         print(line)
-
-    # It is not working, but apparently neither is the original one.
 
 
 def application_3():
-    """Retrieving large datasets.
+    """Sample Application 3: Retrieving large datasets
 
     Download all chimpanzee mRNA sequences in FASTA format (>50,000 sequences).
     """
