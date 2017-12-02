@@ -108,10 +108,11 @@ def print_duplicates(fnames):
         if acc not in seen:
             seen[acc] = i
         else:
-            first = seen[acc]
-            print('* %s seen at %d, first seen at %d:' % (acc, i, first))
-            for n in [first, i]:
-                print('%6d - %s' % (n, full_names[n]))
+            first, current = seen[acc], i
+            print('* Accession number %s at position %d was first seen at %d:'
+                  % (acc, current + 1, first + 1))
+            print('  %6d - %s' % (first, full_names[first]))
+            print('  %6d - %s' % (current, full_names[current]))
 
 
 
