@@ -11,7 +11,7 @@ on_search(db, term, tool[, db2, ...]) - Yield the response of applying a
 Examples of use:
 
 * Fetch information for SNP with id 3000, as in the example of
-  http://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm
+  https://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm
 
   for line in equery(tool='fetch', db='snp', id='3000'):
       print(line)
@@ -27,7 +27,7 @@ Examples of use:
 """
 
 #
-# Useful references (at http://www.ncbi.nlm.nih.gov/books):
+# Useful references (at https://www.ncbi.nlm.nih.gov/books):
 # * Converting accession numbers:
 #     /NBK25498/#chapter3.Application_2_Converting_access
 # * Retrieving large datasets:
@@ -59,7 +59,7 @@ def equery(tool='search', **params):
     # TODO: we could really check better than this...
 
     # Make a POST request and yield the lines of the response.
-    url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
+    url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
     for line_bytes in urlopen(url, urlencode(params).encode('ascii')):
         yield line_bytes.decode('ascii', errors='ignore').rstrip()
 
