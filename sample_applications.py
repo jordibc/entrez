@@ -185,15 +185,16 @@ def application_3():
 
 if __name__ == '__main__':
     # Let the user choose which sample to run.
-    print("Examples from https://www.ncbi.nlm.nih.gov/books/NBK25498/")
-    samples = [sample_1, sample_2, sample_3, sample_4,
-               application_1, application_2, application_3]
+    print('Examples from https://www.ncbi.nlm.nih.gov/books/NBK25498/')
+    functions = [sample_1, sample_2, sample_3, sample_4,
+                 application_1, application_2, application_3]
+    docs = [f.__doc__.split('\n')[0] for f in functions]  # 1st line of docs
     try:
         while True:
-            for i, f in enumerate(samples):
-                print('  %3d - %s' % (i + 1, f.__doc__.split('\n')[0]))
-            choice = raw_input('Sample to run (1-%d): ' % len(samples))
-            assert choice.isdigit() and 1 <= int(choice) <= len(samples)
-            samples[int(choice) - 1]()
-    except (AssertionError, KeyboardInterrupt):
+            for i in range(len(functions)):
+                print('  %3d - %s' % (i + 1, docs[i]))
+            choice = int(raw_input('Sample to run: ')) - 1
+            assert 0 <= choice < len(functions)
+            functions[choice]()
+    except (ValueError, AssertionError, KeyboardInterrupt):
         print('\nBye!')
