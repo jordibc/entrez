@@ -162,8 +162,8 @@ def application_2():
     query = ' OR '.join(a + '[accn]' for a in accs)
 
     # Output: FASTA data.
-    for line in entrez.on_search(db='nuccore', term=query, tool='fetch',
-                                 db2='nuccore', rettype='fasta'):
+    for line in entrez.on_search(db='nuccore', term=query,
+                                 tool='fetch', rettype='fasta'):
         print(line)
 
 
