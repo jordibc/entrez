@@ -16,7 +16,7 @@ The interface is in the file ``entrez.py``. It contains:
     tool over the results of a search query.
 
 There is a program ``sample_applications.py`` that shows how the [sample
-applications of the E-utilities](http://www.ncbi.nlm.nih.gov/books/NBK25498)
+applications of the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498)
 would look like with this interface.
 
 There is also a little program ``acc2gi.py`` that uses the library to
@@ -24,8 +24,8 @@ convert accession numbers into GIs.
 
 ### Examples of use
 
-- Fetch information for SNP with id 3000, as in the example of
-  http://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
+- Fetch information for SNP with id 3000, as in the example at
+  https://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
 
 ```python
 for line in equery(tool='fetch', db='snp', id='3000'):
@@ -44,7 +44,7 @@ for line in on_search(db='nucleotide',
 
  * Download all chimpanzee mRNA sequences in FASTA format (our version
    of the [sample application
-   3](http://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)):
+   3](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)):
 
 ```python
 with open('chimp.fna', 'w') as fout:
@@ -56,6 +56,6 @@ with open('chimp.fna', 'w') as fout:
 
 ### References
 
- * [Introduction to the E-utilities](http://www.ncbi.nlm.nih.gov/books/NBK25497/)
- * [Retrieving large datasets](http://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
- * [Converting accession numbers](http://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_2_Converting_access)
+ * [Introduction to the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
+ * [Retrieving large datasets](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
+ * [Converting accession numbers](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_2_Converting_access)

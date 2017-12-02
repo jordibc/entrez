@@ -2,7 +2,7 @@
 
 """
 Run with our interface the sample applications of the E-utilities
-that appear in http://www.ncbi.nlm.nih.gov/books/NBK25498
+that appear in https://www.ncbi.nlm.nih.gov/books/NBK25498
 """
 
 import entrez
