@@ -50,7 +50,7 @@ _valid_params = ('db dbfrom term id cmd linkname usehistory query_key WebEnv '
                  'rettype retmode retstart retmax').split()
 
 
-def equery(tool='search', **params):
+def equery(tool='search', raw_params='', **params):
     """Yield the response of a query with the given tool."""
     # First make some basic checks.
     assert tool in _valid_tools, 'Invalid web tool: %s' % tool
@@ -60,7 +60,8 @@ def equery(tool='search', **params):
 
     # Make a POST request and yield the lines of the response.
     url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
-    for line_bytes in urlopen(url, urlencode(params).encode('ascii')):
+    data = (urlencode(params) + raw_params).encode('ascii')
+    for line_bytes in urlopen(url, data):
         yield line_bytes.decode('ascii', errors='ignore').rstrip()
 
 
