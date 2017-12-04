@@ -177,9 +177,47 @@ def application_3():
         for line in entrez.on_search(db='nucleotide', term=query,
                                      tool='fetch', rettype='fasta'):
             fout.write(line + '\n')
+    print('The results are in file chimp.fna.')
 
 
-# TODO: all the other applications.
+def application_4():
+    """Sample Application 4: Finding unique sets of linked records for each member of a large dataset
+
+    Download separately the SNP rs numbers (identifiers) for each current gene
+    on human chromosome 20.
+    """
+    query = 'human[orgn] AND 20[chr] AND alive[prop]'
+    ids = []
+    for line in entrez.equery(db='gene', term=query,
+                              usehistory='y', retmax=5000):
+        if line.strip().startswith('<Id>'):  # like:  <Id>6714</Id>
+            ids.append(line.split('>')[1].split('<')[0])
+
+    raw_params = ''.join('&id=%s' % x for x in ids)
+    with open('snp_table', 'w') as fout:
+        in_idlist = False
+        links = []
+        for line in entrez.equery(tool='link', raw_params=raw_params,
+                                  dbfrom='gene', db='snp', linkname='gene_snp'):
+            if '<IdList>' in line:
+                in_idlist = True
+            if '</IdList>' in line:
+                in_idlist = False
+            if '</LinkSet>' in line:
+                fout.write(','.join(links) + '\n')
+                links = []
+            if '<Id>' in line:
+                gid = line.split('<Id>')[1].split('</Id>')[0]
+                if in_idlist:
+                    fout.write('%s:' % gid)
+                else:
+                    links.append(gid)
+    print('The results are in file snp_table.')
+
+# Note that (as of Dec 2017) there is a mistake in the original perl code at
+# https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_4_Finding_unique_se
+# It basically forgets to do "links = []" and so the snps accumulate for each
+# successive gene that appears in the output file.
 
 
 
@@ -187,14 +225,16 @@ if __name__ == '__main__':
     # Let the user choose which sample to run.
     print('Examples from https://www.ncbi.nlm.nih.gov/books/NBK25498/')
     functions = [sample_1, sample_2, sample_3, sample_4,
-                 application_1, application_2, application_3]
+                 application_1, application_2, application_3, application_4]
     docs = [f.__doc__.split('\n')[0] for f in functions]  # 1st line of docs
-    try:
-        while True:
-            for i in range(len(functions)):
-                print('  %3d - %s' % (i + 1, docs[i]))
+
+    while True:
+        for i in range(len(functions)):
+            print('  %3d - %s' % (i + 1, docs[i]))
+        try:
             choice = int(raw_input('Sample to run: ')) - 1
             assert 0 <= choice < len(functions)
-            functions[choice]()
-    except (ValueError, AssertionError, KeyboardInterrupt):
-        print('\nBye!')
+        except (ValueError, AssertionError, KeyboardInterrupt, EOFError):
+            print('\nBye!')
+            break
+        functions[choice]()
