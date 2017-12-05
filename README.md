@@ -15,6 +15,14 @@ The interface is in the file ``entrez.py``. It contains:
  * ``on_search(db, term, tool[, db2, ...])`` - Yield the response of applying a
     tool over the results of a search query.
 
+The most useful function is `equery`. The function `eselect` makes a selection
+of elements on the server, that can be referenced later for future queries
+(instead of downloading a long list of ids that then we would have to send to
+the server again). The function `eapply` can run a tool like `equery`, but using
+a previous selection of elements (made with `eselect`). Finally, `on_search` is
+a convenience function that combines the results of a `eselect` on an `eapply`,
+which is a very common case.
+
 There is a program ``sample_applications.py`` that shows how the [sample
 applications of the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498)
 would look like with this interface.
