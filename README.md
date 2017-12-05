@@ -62,8 +62,25 @@ with open('chimp.fna', 'w') as fout:
         fout.write(line + '\n')
 ```
 
+### API keys
+
+An [API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+can be passed to any of the functions as an argument (for example,
+`equery(..., api_key='ABCD123')`), or it can be initialized at the module level
+with:
+
+```python
+import entrez
+entrez.API_KEY = 'ABCD123'
+```
+
+and from that point on, all the queries will have the API key automatically
+incorporated.
+
+
 ### References
 
  * [Introduction to the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
  * [Retrieving large datasets](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
  * [Converting accession numbers](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_2_Converting_access)
+* [API keys]
