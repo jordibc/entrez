@@ -47,7 +47,9 @@ except ImportError:  # Python 3
 
 _valid_tools = 'info search post summary fetch link gquery citmatch'.split()
 _valid_params = ('db dbfrom term id cmd linkname usehistory query_key WebEnv '
-                 'rettype retmode retstart retmax').split()
+                 'rettype retmode retstart retmax api_key').split()
+
+API_KEY = None
 
 
 def equery(tool='search', raw_params='', **params):
@@ -60,6 +62,10 @@ def equery(tool='search', raw_params='', **params):
 
     # Make a POST request and yield the lines of the response.
     url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
+
+    if not 'api_key' in params and not 'api_key' in raw_params and API_KEY:
+        raw_params += '&api_key=%s' % API_KEY
+
     data = (urlencode(params) + raw_params).encode('ascii')
     for line_bytes in urlopen(url, data):
         yield line_bytes.decode('ascii', errors='ignore').rstrip()
