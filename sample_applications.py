@@ -248,7 +248,8 @@ def application_4():
     """
     query = 'human[orgn] AND 20[chr] AND alive[prop]'
     ids = []
-    for line in ez.equery(db='gene', term=query, usehistory='y', retmax=5000):
+    for line in ez.equery(tool='search', db='gene', term=query,
+                          usehistory='y', retmax=5000):
         if line.strip().startswith('<Id>'):  # like:  <Id>6714</Id>
             ids.append(line.split('>')[1].split('<')[0])
 
