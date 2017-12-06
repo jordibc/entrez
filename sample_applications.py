@@ -150,9 +150,42 @@ def sample_5():
         print(line)
 
 
-# TODO: all the other samples.
-# EPost - ESearch
-# ELink - ESearch
+def sample_6():
+    """EPost - ESearch
+
+    Given an input set of protein GI numbers, create a history set containing
+    the members of the input set that correspond to human proteins.
+    (Which of these proteins are from human?)
+    """
+    id_list = '194680922,50978626,28558982,9507199,6678417'
+    elems = ez.eselect(tool='post', db='protein', id=id_list)
+    for line in ez.eapply(tool='search', db='protein', term='human[orgn]',
+                          elems=elems):
+        print(line)
+
+# The way it is done in the original example, it would look like:
+#    query = '#%s AND human[orgn]' % elems['QueryKey']
+#    for line in ez.equery(tool='search', db='protein', term=query,
+#                          WebEnv=elems['WebEnv'], usehistory='y'):
+#        print(line)
+# which is definitely uglier :)
+
+
+def sample_7():
+    """ELink - ESearch
+
+    Given an input set of protein GI numbers, create a history set containing
+    the gene IDs linked to members of the input set that also are on human
+    chromosome X.
+    (Which of the input proteins are encoded by a gene on human chromosome X?)
+    """
+    # Input: UIDs in database protein (protein GIs).
+    id_list = '148596974,42544182,187937179,4557377,6678417'
+    query = 'human[orgn] AND x[chr]'
+    elems = ez.eselect(tool='link', dbfrom='protein', db='gene', id=id_list,
+                       linkname='protein_gene', cmd='neighbor_history')
+    for line in ez.eapply(tool='search', db='gene', term=query, elems=elems):
+        print(line)
 
 
 def application_1():
@@ -244,8 +277,9 @@ def application_4():
 if __name__ == '__main__':
     # Let the user choose which sample to run.
     print('Examples from https://www.ncbi.nlm.nih.gov/books/NBK25498/')
-    functions = [sample_1, sample_2, sample_3, sample_4, sample_5,
-                 application_1, application_2, application_3, application_4]
+    functions = [
+        sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,
+        application_1, application_2, application_3, application_4]
     docs = [f.__doc__.split('\n')[0] for f in functions]  # 1st line of docs
 
     while True:
