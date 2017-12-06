@@ -38,11 +38,11 @@ Examples of use:
 
 from re import search
 try:
-    from urllib import urlencode
-    from urllib2 import urlopen
-except ImportError:  # Python 3
     from urllib.parse import urlencode
     from urllib.request import urlopen
+except ImportError:  # Python 2
+    from urllib import urlencode
+    from urllib2 import urlopen
 
 
 _valid_tools = 'info search post summary fetch link gquery citmatch'.split()

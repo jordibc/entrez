@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Run with our interface the sample applications of the E-utilities
@@ -281,6 +281,11 @@ def application_4():
 
 
 
+try:
+   input = raw_input  # in case this is run with python 2
+except NameError:
+   pass
+
 if __name__ == '__main__':
     # Let the user choose which sample to run.
     print('Examples from https://www.ncbi.nlm.nih.gov/books/NBK25498/')
@@ -293,7 +298,7 @@ if __name__ == '__main__':
         for i in range(len(functions)):
             print('  %3d - %s' % (i + 1, docs[i]))
         try:
-            choice = int(raw_input('Sample to run: ')) - 1
+            choice = int(input('Sample to run: ')) - 1
             assert 0 <= choice < len(functions)
         except (ValueError, AssertionError, KeyboardInterrupt, EOFError):
             print('\nBye!')
