@@ -45,7 +45,7 @@ for line in equery(tool='fetch', db='snp', id='3000'):
 
 ```python
 for line in on_search(db='nucleotide',
-                      term='NC_010611.1[accs] OR EU477409.1[accs]',
+                      term='NC_010611.1[accn] OR EU477409.1[accn]',
                       tool='summary'):
     print(line)
 ```

@@ -20,7 +20,7 @@ Examples of use:
   NC_010611.1 and EU477409.1
 
   for line in on_search(db='nucleotide',
-                        term='NC_010611.1[accs] OR EU477409.1[accs]',
+                        term='NC_010611.1[accn] OR EU477409.1[accn]',
                         tool='summary'):
       print(line)
 
