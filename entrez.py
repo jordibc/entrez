@@ -64,7 +64,7 @@ def equery(tool='search', raw_params='', **params):
     url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
 
     if not 'api_key' in params and not 'api_key' in raw_params and API_KEY:
-        raw_params += '&api_key=%s' % API_KEY
+        params['api_key'] = API_KEY
 
     data = (urlencode(params) + raw_params).encode('ascii')
     for line_bytes in urlopen(url, data):

@@ -87,10 +87,10 @@ def sample_3():
     Download gene records linked to a set of proteins corresponding to
     a list of GI numbers.
     """
-    # Input UIDs (protein GIs)
+    # Input UIDs (protein GIs).
     id_list = '194680922,50978626,28558982,9507199,6678417'
 
-    # Select elements, linking dbs protein and gene with the name protein_gene
+    # Select elements, linking dbs protein and gene with the name protein_gene.
     elems = ez.eselect(tool='link', dbfrom='protein', db='gene', id=id_list,
                        linkname='protein_gene', cmd='neighbor_history')
 
@@ -137,10 +137,12 @@ def sample_5():
     """
     # Input: List of Entrez UIDs in database protein (protein GIs).
     id_list = '194680922,50978626,28558982,9507199,6678417'
+
     elems_prot = ez.eselect(tool='post', db='protein', id=id_list)
+
     elems_gene = ez.eselect(tool='link', dbfrom='protein', db='gene',
-                            linkname='protein_gene', cmd='neighbor_history',
-                            elems=elems_prot)
+                            elems=elems_prot, linkname='protein_gene',
+                            cmd='neighbor_history')
 
     for line in ez.eapply(tool='summary', db='gene', elems=elems_gene):
         print(line)
@@ -158,7 +160,9 @@ def sample_6():
     (Which of these proteins are from human?)
     """
     id_list = '194680922,50978626,28558982,9507199,6678417'
+
     elems = ez.eselect(tool='post', db='protein', id=id_list)
+
     for line in ez.eapply(tool='search', db='protein', term='human[orgn]',
                           elems=elems):
         print(line)
@@ -181,9 +185,11 @@ def sample_7():
     """
     # Input: UIDs in database protein (protein GIs).
     id_list = '148596974,42544182,187937179,4557377,6678417'
-    query = 'human[orgn] AND x[chr]'
+
     elems = ez.eselect(tool='link', dbfrom='protein', db='gene', id=id_list,
                        linkname='protein_gene', cmd='neighbor_history')
+
+    query = 'human[orgn] AND x[chr]'
     for line in ez.eapply(tool='search', db='gene', term=query, elems=elems):
         print(line)
 
@@ -202,7 +208,7 @@ def application_1():
         print(line)
 
     # The order of the accessions in the output will be the same order as the
-    # GI numbers in gi_list
+    # GI numbers in gi_list.
 
 
 def application_2():
