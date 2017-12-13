@@ -1,4 +1,4 @@
-# Entrez - Call the NCBI E-utilities from Python
+# Entrez - Call the NCBI E-utilities from Python (and a bit more)
 
 A simple Python interface to **query the biological databases** kept at the NCBI.
 It uses the Entrez Programming Utilities (*E-utilities*), nine server-side
@@ -78,9 +78,14 @@ and from that point on, all the queries will have the API key automatically
 incorporated.
 
 
+### An a bit more
+
+NCBI WGS (Whole Genome Shotgun) is a huge database including sequences from incomplete genomes that have been sequenced by a whole genome shotgun strategy. The sequences belong to hundred of thousands of different sequencing projects which should be located and downloaded individually. To ease the task of downloading sequences related to a NCBI taxonomical id (of any taxonomical level), we have developed the `taxid2wgs.py` script, which **collects sequence files from WGS projects and process them** to generate a single coherent fasta file, parsing the sequence headers to update them if needed. As this is a process that could take a long time depending on the taxid selected, the script recovers from several errors and has a _resume mode_ in case of any fatal interruption of the process.
+
 ### References
 
  * [Introduction to the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
  * [Retrieving large datasets](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
  * [Converting accession numbers](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_2_Converting_access)
 * [API keys](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+* [WGS projects browser](https://www.ncbi.nlm.nih.gov/Traces/wgs/)
