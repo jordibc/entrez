@@ -78,7 +78,7 @@ and from that point on, all the queries will have the API key automatically
 incorporated.
 
 
-### An a bit more
+### And a bit more
 
 NCBI WGS (Whole Genome Shotgun) is a huge database including sequences from incomplete genomes that have been sequenced by a whole genome shotgun strategy. The sequences belong to hundred of thousands of different sequencing projects which should be located and downloaded individually. To ease the task of downloading sequences related to a NCBI taxonomical id (of any taxonomical level), we have developed the `taxid2wgs.py` script, which **collects sequence files from WGS projects and process them** to generate a single coherent fasta file, parsing the sequence headers to update them if needed. As this is a process that could take a long time depending on the taxid selected, the script recovers from several errors and has a _resume mode_ in case of any fatal interruption of the process.
 
