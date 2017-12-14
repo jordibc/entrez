@@ -19,16 +19,17 @@ a single coherent fasta file.
 #
 
 import argparse
-from ftplib import FTP, error_temp, error_proto, error_reply
 import gzip
 import http.client
+import itertools
 import os
 import re
 import sys
 import threading
 import time
+from ftplib import FTP, error_temp, error_proto, error_reply
 
-__version__ = '0.1.10'
+__version__ = '0.1.11'
 __date__ = 'Dec 2017'
 
 RETRY_TIMES = [0, 5, 15, 30, 60, 120]
@@ -37,21 +38,29 @@ FTP_SERVER = 'ftp.ncbi.nlm.nih.gov'
 FSA_WGS_END = '.fsa_nt.gz'
 
 
-def resume_info():
-    """Print last information about resume option."""
-    print('\n\033[94m NOTE\033[90m: You can try to solve any issue and resume'
-          '\n\tthe process using the \033[0m-r/--resume\033[90m flag.\033[0m')
+def ansi(n):
+    """Return function that escapes text with ANSI color n."""
+    return lambda txt: '\033[%dm%s\033[0m' % (n, txt)
+
+
+gray, red, green, yellow, blue, magenta, cyan, white = map(ansi,
+                                                           range(90, 98))
+
+resume_info = ' '.join([
+    blue('NOTE:'), gray('You can try to solve any issue and resume'), '\n\t',
+    gray('the process using the'), '-r/--resume', gray(' flag.')])
 
 
 def download_file(ftp, filename):
     """Download file while keeping FTP connection alive."""
+
     def bkg_download():
         """ Aux method to download file in background"""
         with open(filename, 'wb') as file:
             ftp.voidcmd('TYPE I')  # Binary transfer mode
             sckt = ftp.transfercmd('RETR ' + filename)
             while True:
-                chunk = sckt.recv(2**25)  # bufsize as a power of 2 (32 MB)
+                chunk = sckt.recv(2 ** 25)  # bufsize as a power of 2 (32 MB)
                 if not chunk:
                     break
                 file.write(chunk)
@@ -64,71 +73,41 @@ def download_file(ftp, filename):
         ftp.voidcmd('NOOP')
 
 
-def dyn_progress():
-    """Generator to provide progress of process"""
-    states = r'- \ | /'.split()
-    while True:
-        for state in states:
-            yield state
-
-
 def main():
     """Main entry point to the script."""
     # Argument Parser Configuration
     parser = argparse.ArgumentParser(
         description='Collect NCBI WGS project fasta files from a taxid',
         epilog='%(prog)s -- {}'.format(__date__),
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument(
-        '-d', '--download',
-        action='store_true',
-        help='Just download (not parse) the WGS project files'
-    )
-    parser.add_argument(
-        '-e', '--reverse',
-        action='store_true',
-        help='Reversed (alphabetical) order for processing projects'
-    )
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    add = parser.add_argument  # shortcut
+    add('-d', '--download', action='store_true',
+        help='Just download (not parse) the WGS project files')
+    add('-e', '--reverse', action='store_true',
+        help='Reversed (alphabetical) order for processing projects')
     mode = parser.add_mutually_exclusive_group(required=False)
     mode.add_argument(
-        '-f', '--force',
-        action='store_true',
+        '-f', '--force', action='store_true',
         help='Force downloading and recreating the final FASTA file in '
              'spite of any previous run. This will clear temporal and output '
-             'files but not previous downloads.'
-    )
+             'files but not previous downloads.')
     mode.add_argument(
-        '-r', '--resume',
-        action='store_true',
-        help='Resume downloading without checking the server for every project'
-    )
-    parser.add_argument(
-        '-t', '--taxid',
-        action='store',
-        metavar='TAXID',
-        type=str,
+        '-r', '--resume', action='store_true',
+        help='Resume downloading without checking '
+             'the server for every project')
+    add('-t', '--taxid', action='store',
+        metavar='TAXID', type=str,
         default='548681',  # Herpesvirus as test taxid
-        help='NCBI taxid code to include a taxon and all underneath.'
-    )
-    parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help='produce verbose output  (combine with --debug for further info)'
-    )
-    parser.add_argument(
-        '-V', '--version',
-        action='version',
-        version='%(prog)s release {} ({})'.format(__version__, __date__)
-    )
-    parser.add_argument(
-        '-x', '--exclude',
-        action='store',
-        metavar='TAXID',
-        type=str,
+        help='NCBI taxid code to include a taxon and all underneath.')
+    add('-v', '--verbose', action='store_true',
+        help='enable verbose mode'
+             '(combine with --debug for further info)')
+    add('-V', '--version', action='version',
+        version='%(prog)s release {} ({})'.format(__version__, __date__))
+    add('-x', '--exclude', action='store',
+        metavar='TAXID', type=str,
         default='',
-        help='NCBI taxid code to exclude a taxon and all underneath.'
-    )
+        help='NCBI taxid code to exclude a taxon and all underneath.')
 
     # Parse arguments
     args = parser.parse_args()
@@ -138,7 +117,13 @@ def main():
     reverse = args.reverse
     taxid = args.taxid
     exclude = args.exclude
-    verb = args.verbose
+
+    def vprint(*a, **k):
+        """Print only if verbose mode is enabled"""
+        if args.verbose:
+            print(*a, **k, flush=True)
+        else:
+            pass
 
     # Program header
     print('\n=-= {} =-= v{} =-= {} =-=\n'.format(
@@ -185,14 +170,12 @@ def main():
                   'with force flag enabled.\033[0m'.format(fstfile))
             exit(3)
     # Display some info
-    if verb:
-        if force:
-            print('\033[94mINFO\033[90m: All cleared by '
-                  '\033[93mforce\033[90m flag!\033[0m')
-        if just_download:
-            print('\033[94mINFO\033[90m: "Just download" mode enabled.\033[0m')
-        if reverse:
-            print('\033[94mINFO\033[90m: Reversed mode enabled.\033[0m')
+    if force:
+        vprint(blue('INFO:'), gray('All cleared by flag'), yellow('force'))
+    if just_download:
+        vprint(blue('INFO:'), gray('"Just download" mode enabled.'))
+    if reverse:
+        vprint(blue('INFO:'), gray('Reversed mode enabled.'))
     if resume or (just_download and not force):
         print(len(previous), '\033[90mWGS project files are in current '
                              'dir. If any, we won\'t look for them.\033[0m')
@@ -207,9 +190,8 @@ def main():
                r'&EXCLUDE_TAXIDS=' + exclude
     )
     response = conn.getresponse()
-    if verb:
-        print('\033[90mNCBI server response result:\033[0m',
-              response.status, response.reason)
+    vprint(gray('NCBI server response result:'),
+           response.status, response.reason)
     data = response.read()
     wgs_projects_raw = data.replace(b'WGS_VDB://',
                                     b'').rstrip().decode().split('\n')
@@ -232,7 +214,7 @@ def main():
         fstfile = tmpfile = '/dev/null'  # Don't touch the real files
     with open(fstfile, 'a') as wgs, open(tmpfile, 'a') as tmp:
         processed = len(parsed)
-        progress = dyn_progress()
+        progress = itertools.cycle(r'-\|/')
         # Looping for projects in the WGS projects to process
         for proj in wgs_projects:
             ftp = None
@@ -242,17 +224,13 @@ def main():
             if resume:
                 downloaded = [f for f in previous if f.startswith(proj)]
                 if downloaded:
-                    if verb:
-                        print('\033[90m [Project\033[0m %s\033[90m '
-                              'seems in disk. Skipping...]\033[0m' % proj)
+                    vprint(gray('Project'), proj, gray('in disk. Skipping...'))
                     to_download = downloaded
             if not downloaded:
-                if verb:
-                    print('\033[90m{} of {}: Process WGS \033[0m{}\033[90m '
-                          'project...\033[0m'.format(processed + 1,
-                                                     len(wgs_projects), proj),
-                          end='')
-                    sys.stdout.flush()
+                vprint('\033[90m{} of {}: Process WGS \033[0m{}\033[90m '
+                       'project...\033[0m'.format(processed + 1,
+                                                  len(wgs_projects), proj),
+                       end='')
                 filenames = []
                 error = None
                 for retry_time in RETRY_TIMES:
@@ -273,7 +251,7 @@ def main():
                         error = err
                     except KeyboardInterrupt:
                         print('\033[90m User\033[93m interrupted!\033[0m')
-                        resume_info()
+                        print(resume_info)
                         exit(9)
                     else:
                         break
@@ -281,17 +259,14 @@ def main():
                     print('\033[91m FAILED!\033[90m '
                           'Exceeded number of attempts!\033[0m')
                     print('\033[90mError message:\033[0m', error)
-                    resume_info()
+                    print(resume_info)
                     exit(5)
-                to_download = [file for file in filenames
-                               if file.endswith(FSA_WGS_END)]
+                to_download = [f for f in filenames if f.endswith(FSA_WGS_END)]
             # Looping for files in the WGS project
             for filename in to_download:
                 # Check for already downloaded
                 if not force and os.path.isfile(filename):
-                    if verb:
-                        print('\033[90m[%s already downloaded]\033[0m' %
-                              filename, end=' ')
+                    vprint(gray('[%s already downloaded]' % filename), end=' ')
                 else:
                     error = None
                     for retry_time in RETRY_TIMES:
@@ -314,7 +289,7 @@ def main():
                             error = err
                         except KeyboardInterrupt:
                             print('\033[90m User\033[93m interrupted!\033[0m')
-                            resume_info()
+                            print(resume_info)
                             try:  # Avoid keeping in disk a corrupt file
                                 os.remove(filename)
                             except OSError:
@@ -330,7 +305,7 @@ def main():
                         print('\033[91m FAILED!\033[90m '
                               'Exceeded number of attempts!\033[0m')
                         print('\033[90mError message:\033[0m', error)
-                        resume_info()
+                        print(resume_info)
                         exit(5)
                     skipped = False
                 # Decompress, parse and update headers if needed
@@ -346,7 +321,7 @@ def main():
                         print('\n\033[91m FAILED!\033[90m Unexpected EOF '
                               'while parsing file \033[0m{}\033[90m. '
                               'Is it corrupted?\033[0m'.format(filename))
-                        resume_info()
+                        print(resume_info)
                         exit(4)
                     line1 = all_lines[0]
                     # Check fasta-read header format
@@ -373,7 +348,7 @@ def main():
                             print('\n\033[91m FAILED!\033[90m Unexpected EOF '
                                   'while parsing file \033[0m{}\033[90m. '
                                   'Is it corrupted?\033[0m'.format(filename))
-                            resume_info()
+                            print(resume_info)
                             exit(3)
             # Project is done: update temporal file and console output
             if ftp:
@@ -387,9 +362,8 @@ def main():
             tmp.write(proj + '\n')
             tmp.flush()
             processed += 1
-            if verb:
-                print('\033[92m OK! \033[0m')
-            else:
+            vprint(green(' OK!'))
+            if not args.verbose:
                 if processed % 1 == 0:
                     print('\r\033[95m{}\033[0m [{:.2%}]\033[90m'.format(
                         next(progress), processed / len(wgs_projects_raw)),
@@ -402,9 +376,9 @@ def main():
                         print(' Downloading and parsing...\033[0m   ', end='')
             sys.stdout.flush()
     if just_download:
-        print('\033[92mAll downloaded! \033[0m')
+        print(green('All downloaded!'))
     else:
-        print('\033[92mAll OK! \033[0m')
+        print(green('All OK!'))
         try:  # Remove temporal file. Not needed anymore.
             os.remove(tmpfile)
         except OSError:
