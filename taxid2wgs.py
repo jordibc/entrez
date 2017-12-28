@@ -29,7 +29,7 @@ import threading
 import time
 from ftplib import FTP, error_temp, error_proto, error_reply
 
-__version__ = '0.1.11'
+__version__ = '0.1.12'
 __date__ = 'Dec 2017'
 
 RETRY_TIMES = [0, 5, 15, 30, 60, 120]
@@ -43,8 +43,7 @@ def ansi(n):
     return lambda txt: '\033[%dm%s\033[0m' % (n, txt)
 
 
-gray, red, green, yellow, blue, magenta, cyan, white = map(ansi,
-                                                           range(90, 98))
+gray, red, green, yellow, blue, magenta, cyan, white = map(ansi, range(90, 98))
 
 resume_info = ' '.join([
     blue('NOTE:'), gray('You can try to solve any issue and resume'), '\n\t',
@@ -122,8 +121,6 @@ def main():
         """Print only if verbose mode is enabled"""
         if args.verbose:
             print(*a, **k, flush=True)
-        else:
-            pass
 
     # Program header
     print('\n=-= {} =-= v{} =-= {} =-=\n'.format(
@@ -145,29 +142,27 @@ def main():
         if force:
             os.remove(tmpfile)
         elif just_download:
-            parsed_raw = open(tmpfile, 'r').readlines()
-            parsed = [proj.rstrip() for proj in parsed_raw]
+            parsed = [proj.rstrip() for proj in open(tmpfile)]
         elif resume:
-            parsed_raw = open(tmpfile, 'r').readlines()
-            parsed = [proj.rstrip() for proj in parsed_raw]
+            parsed = [proj.rstrip() for proj in open(tmpfile)]
             if parsed and not os.path.isfile(fstfile):
-                print('\033[91m ERROR!\033[90m Temp file \0330m{}\033[90m '
-                      'exists but not the corresponding FASTA file '
-                      '\033[91m{}\033[90m.\nPlease correct this or run with '
-                      'force flag enabled.'.format(tmpfile, fstfile))
+                print(red(' ERROR!'), gray('Temp file'), tmpfile,
+                      gray('exists but not the corresponding FASTA file'),
+                      fstfile, gray('\nPlease correct this or run with '
+                      'force flag enabled.'))
                 exit(1)
         else:
-            print('\033[91m ERROR!\033[90m Temp file \033[0m{}\033[90m exists '
-                  'but resume flag not set.\nPlease correct this or run with '
-                  'download, resume or force flag.\033[0m'.format(tmpfile))
+            print(red(' ERROR!'), gray('Temp file'), tmpfile,
+                  gray('exists but resume flag not set.\nPlease correct this '
+                       'or run with download, resume or force flag.'))
             exit(2)
     elif os.path.exists(fstfile):
         if force:
             os.remove(fstfile)
         else:
-            print('\033[91m ERROR!\033[90m FASTA file \033[0m{}\033[90m exists'
-                  ' (but temporal file missing).\nPlease correct this or run '
-                  'with force flag enabled.\033[0m'.format(fstfile))
+            print(red(' ERROR!'), gray('FASTA file'), fstfile,
+                  gray('exists (but temporal file missing).\nPlease correct '
+                       'this or run with force flag enabled.'))
             exit(3)
     # Display some info
     if force:
@@ -177,11 +172,10 @@ def main():
     if reverse:
         vprint(blue('INFO:'), gray('Reversed mode enabled.'))
     if resume or (just_download and not force):
-        print(len(previous), '\033[90mWGS project files are in current '
-                             'dir. If any, we won\'t look for them.\033[0m')
-        print(len(parsed), '\033[90mWGS projects already parsed. '
-                           'If any, we will ignore them.\033[0m')
-    sys.stdout.flush()
+        print(len(previous), gray('WGS project files are in current dir. '
+                                  'If any, we won\'t look for them.'))
+        print(len(parsed), gray('WGS projects already parsed. '
+                                'If any, we will ignore them.'))
 
     # Get WGS project list from taxid and exclude
     conn = http.client.HTTPSConnection('www.ncbi.nlm.nih.gov')
@@ -197,17 +191,13 @@ def main():
                                     b'').rstrip().decode().split('\n')
     wgs_projects = [proj for proj in wgs_projects_raw if proj not in parsed]
     if not wgs_projects:
-        print('\033[90mNo projects to process!\033[92m All done!\033[0m')
+        print(gray('No projects to process!'), green('All done!'))
         exit(0)
     # There are projects to process. Go ahead!
     wgs_projects.sort(reverse=reverse)
-    print(len(wgs_projects), '\033[90mWGS projects to collect for '
-                             'tid\033[0m', taxid, end='')
-    if exclude:
-        print('\033[90m excluding tid\033[0m', exclude)
-    else:
-        print('\033[0m')
-    sys.stdout.flush()
+    exclude_txt = (gray(' excluding tid') + exclude) if exclude else ''
+    print(len(wgs_projects), gray('WGS projects to collect for tid'), taxid,
+          exclude_txt, flush=True)
     basedir = '/sra/wgs_aux/'
     # Append to fasta file (main output) and temporal file (projects done)
     if just_download:
@@ -235,9 +225,8 @@ def main():
                 error = None
                 for retry_time in RETRY_TIMES:
                     if retry_time:
-                        print('\n\033[90m Retrying in %s seconds...\033[0m'
-                              % retry_time, end='')
-                        sys.stdout.flush()
+                        print(gray(' Retrying in %s seconds...' % retry_time),
+                              end='', flush=True)
                     time.sleep(retry_time)
                     try:
                         ftp = FTP(FTP_SERVER, timeout=30)
