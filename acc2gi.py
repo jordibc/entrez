@@ -79,7 +79,6 @@ def parse(raw):
 
     if re.search('NC_\d+', raw):            # Eg: NC_013773
         return re.search('NC_\d+', raw).group()
-#    elif re.search('(?!fosA_.*?_)NZ_[A-Z0-9]+', raw):    # Eg: NZ_AGSO01000004.1
     elif re.search('NZ_[A-Z0-9]+', raw):    # Eg: NZ_AGSO01000004.1
         return re.search('NZ_[A-Z0-9]+', raw).group()
     elif '_' in raw:             # Eg: VanY-D_4_AY489045, dfrB3_1_FM877478
