@@ -1,0 +1,30 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "http://orcid.org/0000-0002-9198-5380",
+      "@type": "Person",
+      "email": "jordi.burguet.castell@gmail.com",
+      "name": "Jordi Burguet-Castell",
+      "affiliation": ""
+    },
+    {
+      "@id": "http://orcid.org/0000-0002-1902-9749",
+      "@type": "Person",
+      "email": "jose.m.marti@uv.es",
+      "name": "Jose Manuel Martí",
+      "affiliation": "Institute for Integrative Systems Biology (I2SysBio), Valencia, Spain"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/jordibc/entrez/wiki",
+  "datePublished": "2018-01-09",
+  "dateModified": "2018-01-09",
+  "dateCreated": "2018-01-09",
+  "description": "A Python interface to query the biological databases at the NCBI.",
+  "keywords": "ncbi, e-utilities, bioinformatics, python, wrapper",
+  "license": "GPL v3.0",
+  "title": "Entrez",
+  "version": ""
+}
