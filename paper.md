@@ -12,10 +12,12 @@ authors:
    affiliation: 1
  - name: Jordi Burguet-Castell
    orcid: 0000-0002-9198-5380
-   affiliation: none
+   affiliation: 2
 affiliations:
  - name: Institute for Integrative Systems Biology (I2SysBio), Valencia, Spain
    index: 1
+ - name: None
+   index: 2
 date: 9 January 2018
 bibliography: paper.bib
 ---
