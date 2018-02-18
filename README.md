@@ -27,8 +27,8 @@ There is a program ``sample_applications.py`` that shows how the [sample
 applications of the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498)
 would look like with this interface.
 
-There is also a little program ``acc2gi.py`` that uses the library to
-convert accession numbers into GIs.
+There are also some little programs: ``acc2gi.py`` uses the library to
+convert accession numbers into GIs, and ``sra2runacc.py`` uses entrez to get all the run accession numbers for a given SRA study.
 
 ### Examples of use
 
