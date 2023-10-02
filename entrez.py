@@ -37,12 +37,9 @@ Examples of use:
 #
 
 from re import search
-try:
-    from urllib.parse import urlencode
-    from urllib.request import urlopen
-except ImportError:  # Python 2
-    from urllib import urlencode
-    from urllib2 import urlopen
+from urllib.parse import urlencode
+from urllib.request import urlopen
+from xml.etree import ElementTree
 
 
 _valid_tools = 'info search post summary fetch link gquery citmatch'.split()
@@ -128,3 +125,36 @@ def on_search(db, term, tool, db2=None, **params):
     for line in eapply(elems=eselect(tool='search', db=db, term=term),
                        db=(db2 or db), tool=tool, **params):
         yield line
+
+
+# Convenient translations.
+#
+# Many results come as a xml string, and it would be very nice to
+# manage them as python dictionaries.
+
+def xml2dict(xml_str):
+    """Return the given xml string as a dictionary."""
+    return xml_node_to_dict(ElementTree.XML(xml_str))
+
+
+def xml_node_to_dict(node):
+    """Return a dict with the contents of the given xml node."""
+    # If the node has attributes, we'll keep them with a "@" in front.
+    attrs = {'@'+k: v for k, v in node.attrib.items()}
+    tags = [n.tag for n in node]  # all tags in children nodes
+    ntags = len(set(tags))  # number of different tags
+
+    if len(node) == 0:
+        assert len(attrs) == 0, 'Will not save text node with attributes.'
+        return {node.tag: node.text or ''}
+    elif len(tags) == ntags):  # all tags are different
+        subdict = attrs
+        for n in node:
+            subdict.update(xml_node_to_dict(n))  # add content from subnodes
+
+        return {node.tag: subdict}
+    elif ntags == 1:  # all tags are the same
+        assert len(attrs) == 0, 'Will not save list node with attributes.'
+        return {node.tag: [xml_node_to_dict(n) for n in node]}  # add as a list!
+    else:  # some tags are the same and others aren't... what the heck
+        raise ValueError('What an ugly xml. I refuse to convert it.')
