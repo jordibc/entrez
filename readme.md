@@ -62,10 +62,12 @@ for line in ez.on_search(db='nucleotide',
    3](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)):
 
 ```py
+import entrez as ez
+
 with open('chimp.fna', 'w') as fout:
-    for line in on_search(db='nucleotide',
-                          term='chimpanzee[orgn] AND biomol mrna[prop]',
-                          tool='fetch', rettype='fasta'):
+    for line in ez.on_search(db='nucleotide',
+                             term='chimpanzee[orgn] AND biomol mrna[prop]',
+                             tool='fetch', rettype='fasta'):
         fout.write(line + '\n')
 ```
 
