@@ -39,6 +39,7 @@ Examples of use:
 from re import search
 from urllib.parse import urlencode
 from urllib.request import urlopen
+from itertools import groupby
 from xml.etree import ElementTree
 
 
@@ -132,7 +133,7 @@ def on_search(db, term, tool, db2=None, **params):
 # Many results come as a xml string, and it would be very nice to
 # manage them as python dictionaries.
 
-def xml2dict(xml_str):
+def read_xml(xml_str):
     """Return the given xml string as a dictionary."""
     return xml_node_to_dict(ElementTree.XML(xml_str))
 
@@ -140,21 +141,34 @@ def xml2dict(xml_str):
 def xml_node_to_dict(node):
     """Return a dict with the contents of the given xml node."""
     # If the node has attributes, we'll keep them with a "@" in front.
-    attrs = {'@'+k: v for k, v in node.attrib.items()}
-    tags = [n.tag for n in node]  # all tags in children nodes
-    ntags = len(set(tags))  # number of different tags
+    subdict = {'@'+k: v for k, v in node.attrib.items()}
 
-    if len(node) == 0:
-        assert len(attrs) == 0, 'Will not save text node with attributes.'
-        return {node.tag: node.text or ''}
+    tag = node.tag
+    tags = [n.tag for n in node]  # all tags in children nodes
+    ntags = len(set(tags))  # number of different tags in children
+
+    if len(tags) == 0:  # no children
+        if len(subdict) == 0:
+            return {tag: node.text or ''}
+        else:
+            return {tag: dict(subdict, text=(node.text or ''))}
     elif len(tags) == ntags:  # all tags are different
-        subdict = attrs
         for n in node:
             subdict.update(xml_node_to_dict(n))  # add content from subnodes
-
-        return {node.tag: subdict}
+        return {tag: subdict}
     elif ntags == 1:  # all tags are the same
-        assert len(attrs) == 0, 'Will not save list node with attributes.'
-        return {node.tag: [xml_node_to_dict(n) for n in node]}  # add as a list!
+        if len(subdict) == 0:
+            return {tag: [xml_node_to_dict(n) for n in node]}
+        else:
+            return {tag: dict(subdict,
+                              children=[xml_node_to_dict(n) for n in node])}
     else:  # some tags are the same and others aren't... what the heck
-        raise ValueError('What an ugly xml. I refuse to convert it.')
+        nodes = sorted((n for n in node), key=lambda n: n.tag)
+        for gtag, group_tag in groupby(nodes, lambda n: n.tag):
+            nodes_tag = list(group_tag)  # don't exhaust the iterator
+            if len(nodes_tag) == 1:
+                subdict.update(xml_node_to_dict(nodes_tag[0]))
+            else:
+                subdict.update({(gtag+'-group'):
+                                [xml_node_to_dict(n) for n in nodes_tag]})
+        return {tag: subdict}
