@@ -24,16 +24,19 @@ with `eselect`). Finally, `on_search` is a convenience function that
 combines the results of a `eselect` on an `eapply`, which is a very
 common case.
 
-In the `examples` directory, there is a program
-``sample_applications.py`` that shows how the [sample applications of
-the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498) would
-look like with this interface.
 
-There are also some little programs: ``acc2gi.py`` uses the library to
-convert accession numbers into GIs, and ``sra2runacc.py`` uses entrez
-to get all the run accession numbers for a given SRA study.
+## Installation
 
-### Examples of use
+You can run from this directory without installing anything, or simply
+put ``entrez.py`` in a place where your python interpreter can find it
+(for example, you can add this directory to your
+[PYTHONPATH](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)).
+
+Really. There is no need to ``pip install`` anything. Everything is in
+just one file.
+
+
+## Examples
 
 - Fetch information for SNP with id 3000, as in the example at
   https://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
@@ -71,7 +74,17 @@ with open('chimp.fna', 'w') as fout:
         fout.write(line + '\n')
 ```
 
-### API keys
+In the `examples` directory, there is a program
+``sample_applications.py`` that shows how the [sample applications of
+the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498) would
+look like with this interface.
+
+There are also some little programs: ``acc2gi.py`` uses the library to
+convert accession numbers into GIs, and ``sra2runacc.py`` uses entrez
+to get all the run accession numbers for a given SRA study.
+
+
+## API keys
 
 An [API
 key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
@@ -88,7 +101,7 @@ and from that point on, all the queries will have the API key
 automatically incorporated.
 
 
-### References
+## References
 
  * [Introduction to the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
  * [Retrieving large datasets](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
