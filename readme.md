@@ -38,8 +38,8 @@ just one file.
 
 ## Examples
 
-- Fetch information for SNP with id 3000, as in the example at
-  https://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
+Fetch information for SNP with id 3000, as in the example at
+https://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
 
 ```py
 import entrez as ez
@@ -48,8 +48,8 @@ for line in ez.equery(tool='fetch', db='snp', id='3000'):
     print(line)  # or:  print(ez.read_xml(line))  for nicer output
 ```
 
- * Get a summary of nucleotides related to accession numbers
-   `NC_010611.1` and `EU477409.1`:
+Get a summary of nucleotides related to accession numbers
+`NC_010611.1` and `EU477409.1`:
 
 ```py
 import entrez as ez
@@ -60,9 +60,9 @@ for line in ez.on_search(db='nucleotide',
     print(line)
 ```
 
- * Download to file ``chimp.fna`` all chimpanzee mRNA sequences in
-   FASTA format (our version of the [sample application
-   3](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)):
+Download to file ``chimp.fna`` all chimpanzee mRNA sequences in FASTA
+format (our version of the [sample application
+3](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)):
 
 ```py
 import entrez as ez
@@ -74,14 +74,16 @@ with open('chimp.fna', 'w') as fout:
         fout.write(line + '\n')
 ```
 
-In the `examples` directory, there is a program
-``sample_applications.py`` that shows how the [sample applications of
-the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498) would
-look like with this interface.
+In the [examples](examples) directory, there is a program
+[sample_applications.py](examples/sample_applications.py) that shows
+how the [sample applications of the
+E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498) would look
+like with this interface.
 
-There are also some little programs: ``acc2gi.py`` uses the library to
-convert accession numbers into GIs, and ``sra2runacc.py`` uses entrez
-to get all the run accession numbers for a given SRA study.
+There are also some little programs: [acc2gi.py](examples/acc2gi.py)
+uses the library to convert accession numbers into GIs, and
+[sra2runacc.py](examples/sra2runacc.py) uses entrez to get all the run
+accession numbers for a given SRA study.
 
 
 ## API keys
