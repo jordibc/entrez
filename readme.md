@@ -38,26 +38,30 @@ to get all the run accession numbers for a given SRA study.
 - Fetch information for SNP with id 3000, as in the example at
   https://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
 
-```python
-for line in equery(tool='fetch', db='snp', id='3000'):
-    print(line)
+```py
+import entrez as ez
+
+for line in ez.equery(tool='fetch', db='snp', id='3000'):
+    print(line)  # or:  print(ez.read_xml(line))  for nicer output
 ```
 
  * Get a summary of nucleotides related to accession numbers
    `NC_010611.1` and `EU477409.1`:
 
-```python
-for line in on_search(db='nucleotide',
-                      term='NC_010611.1[accn] OR EU477409.1[accn]',
-                      tool='summary'):
+```py
+import entrez as ez
+
+for line in ez.on_search(db='nucleotide',
+                         term='NC_010611.1[accn] OR EU477409.1[accn]',
+                         tool='summary'):
     print(line)
 ```
 
- * Download all chimpanzee mRNA sequences in FASTA format (our version
-   of the [sample application
+ * Download to file ``chimp.fna`` all chimpanzee mRNA sequences in
+   FASTA format (our version of the [sample application
    3](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)):
 
-```python
+```py
 with open('chimp.fna', 'w') as fout:
     for line in on_search(db='nucleotide',
                           term='chimpanzee[orgn] AND biomol mrna[prop]',
@@ -73,7 +77,7 @@ can be passed to any of the functions as an argument (for example,
 `equery(..., api_key='ABCD123')`), or it can be initialized at the
 module level with:
 
-```python
+```py
 import entrez
 entrez.API_KEY = 'ABCD123'
 ```
