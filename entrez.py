@@ -147,7 +147,7 @@ def xml_node_to_dict(node):
     if len(node) == 0:
         assert len(attrs) == 0, 'Will not save text node with attributes.'
         return {node.tag: node.text or ''}
-    elif len(tags) == ntags):  # all tags are different
+    elif len(tags) == ntags:  # all tags are different
         subdict = attrs
         for n in node:
             subdict.update(xml_node_to_dict(n))  # add content from subnodes
