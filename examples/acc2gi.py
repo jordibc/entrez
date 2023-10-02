@@ -9,23 +9,12 @@ import sys
 import re
 import argparse
 
+sys.path.append('..')
 import entrez
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-f', '--fastas', metavar='FILE', nargs='+',
-                       help='fasta files with the accession numbers')
-    group.add_argument('-a', '--accessions', metavar='ACC', nargs='+',
-                       help='accession numbers')
-    parser.add_argument('-n', '--nreq', type=int, default=100,
-                        help='number of accession numbers per request')
-    parser.add_argument('-m', '--max', type=int, default=-1,
-                        help='maximum number to query')
-    parser.add_argument('-c', '--check', action='store_true',
-                        help='just check duplicate accession numbers')
-    args = parser.parse_args()
+    args = get_args()
 
     # If in "check mode", just check for duplicate accession numbers and exit.
     if args.check:
@@ -43,6 +32,24 @@ def main():
     for i in range(0, total_requests, args.nreq):
         print_acc2gi(accessions[i:min(i + args.nreq, total_requests)])
 
+
+def get_args():
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-f', '--fastas', metavar='FILE', nargs='+',
+                       help='fasta files with the accession numbers')
+    group.add_argument('-a', '--accessions', metavar='ACC', nargs='+',
+                       help='accession numbers')
+
+    parser.add_argument('-n', '--nreq', type=int, default=100,
+                        help='number of accession numbers per request')
+    parser.add_argument('-m', '--max', type=int, default=-1,
+                        help='maximum number to query')
+    parser.add_argument('-c', '--check', action='store_true',
+                        help='just check duplicate accession numbers')
+
+    return parser.parse_args()
 
 
 def print_acc2gi(accessions):

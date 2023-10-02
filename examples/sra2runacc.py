@@ -13,9 +13,11 @@ the different samples in the SRA study.
 # * NCBI SRA Toolkit repo: https://github.com/ncbi/sra-tools
 # * NCBI SRA Toolkit wiki: https://github.com/ncbi/sra-tools/wiki
 
+import sys
 import argparse
 import re
 
+sys.path.append('..')
 import entrez
 
 

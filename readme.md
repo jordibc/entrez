@@ -1,9 +1,9 @@
 # Entrez - Call the NCBI E-utilities from Python
 
-A simple Python interface to **query the biological databases** kept at the NCBI.
-It uses the Entrez Programming Utilities (*E-utilities*), nine server-side
-programs that access the Entrez query and database system at the National Center
-for Biotechnology Information (NCBI).
+A simple Python interface to **query the biological databases** kept
+at the NCBI. It uses the Entrez Programming Utilities (*E-utilities*),
+nine server-side programs that access the Entrez query and database
+system at the National Center for Biotechnology Information (NCBI).
 
 The interface is in the file ``entrez.py``. It contains:
 
@@ -15,20 +15,23 @@ The interface is in the file ``entrez.py``. It contains:
  * ``on_search(db, term, tool[, db2, ...])`` - Yield the response of applying a
     tool over the results of a search query.
 
-The most useful function is `equery`. The function `eselect` makes a selection
-of elements on the server, that can be referenced later for future queries
-(instead of downloading a long list of ids that then we would have to send to
-the server again). The function `eapply` can run a tool like `equery`, but using
-a previous selection of elements (made with `eselect`). Finally, `on_search` is
-a convenience function that combines the results of a `eselect` on an `eapply`,
-which is a very common case.
+The most useful function is `equery`. The function `eselect` makes a
+selection of elements on the server, that can be referenced later for
+future queries (instead of downloading a long list of ids that then we
+would have to send to the server again). The function `eapply` can run
+a tool like `equery`, but using a previous selection of elements (made
+with `eselect`). Finally, `on_search` is a convenience function that
+combines the results of a `eselect` on an `eapply`, which is a very
+common case.
 
-There is a program ``sample_applications.py`` that shows how the [sample
-applications of the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498)
-would look like with this interface.
+In the `examples` directory, there is a program
+``sample_applications.py`` that shows how the [sample applications of
+the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25498) would
+look like with this interface.
 
 There are also some little programs: ``acc2gi.py`` uses the library to
-convert accession numbers into GIs, and ``sra2runacc.py`` uses entrez to get all the run accession numbers for a given SRA study.
+convert accession numbers into GIs, and ``sra2runacc.py`` uses entrez
+to get all the run accession numbers for a given SRA study.
 
 ### Examples of use
 
@@ -64,18 +67,19 @@ with open('chimp.fna', 'w') as fout:
 
 ### API keys
 
-An [API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+An [API
+key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
 can be passed to any of the functions as an argument (for example,
-`equery(..., api_key='ABCD123')`), or it can be initialized at the module level
-with:
+`equery(..., api_key='ABCD123')`), or it can be initialized at the
+module level with:
 
 ```python
 import entrez
 entrez.API_KEY = 'ABCD123'
 ```
 
-and from that point on, all the queries will have the API key automatically
-incorporated.
+and from that point on, all the queries will have the API key
+automatically incorporated.
 
 
 ### References
@@ -84,3 +88,15 @@ incorporated.
  * [Retrieving large datasets](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
  * [Converting accession numbers](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_2_Converting_access)
  * [API keys](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+
+
+## Extra documentation
+
+There is some more information in the [doc](doc) directory, and on the
+[wiki](https://gitlab.com/jordibc/entrez/-/wikis/).
+
+
+## License
+
+This program is licensed under the GPL v3. See the [project
+license](doc/license.md) for further details.

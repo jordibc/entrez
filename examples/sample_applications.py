@@ -5,6 +5,9 @@ Run with our interface the sample applications of the E-utilities
 that appear in https://www.ncbi.nlm.nih.gov/books/NBK25498
 """
 
+import sys
+
+sys.path.append('..')
 import entrez as ez
 
 
