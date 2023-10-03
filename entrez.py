@@ -53,13 +53,13 @@ API_KEY = None
 def equery(tool='search', raw_params='', **params):
     """Yield the response of a query with the given tool."""
     # First make some basic checks.
-    assert tool in _valid_tools, 'Invalid web tool: %s' % tool
+    assert tool in _valid_tools, f'Invalid web tool: {tool}'
     for k in params:
-        assert k in _valid_params, 'Unknown parameter: %s' % k
-    # TODO: we could really check better than this...
+        assert k in _valid_params, f'Unknown parameter: {k}'
+    # We could check better than this, but it's probably unnecessary.
 
     # Make a POST request and yield the lines of the response.
-    url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/e%s.fcgi' % tool
+    url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/e{tool}.fcgi'
 
     if not 'api_key' in params and not 'api_key' in raw_params and API_KEY:
         params['api_key'] = API_KEY
@@ -82,8 +82,8 @@ def eselect(tool, db, elems=None, **params):
     elems_new = {}
     for line in equery(tool=tool, usehistory='y', db=db, **params):
         for k in ['WebEnv', 'QueryKey', 'Count']:
-            if k not in elems_new and '<%s>' % k in line:
-                elems_new[k] = search('<%s>(\S+)</%s>' % (k, k), line).groups()[0]
+            if k not in elems_new and f'<{k}>' in line:
+                elems_new[k] = search(f'<{k}>(\S+)</{k}>', line).groups()[0]
     return elems_new
 
 
