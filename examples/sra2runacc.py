@@ -9,7 +9,7 @@ the different samples in the SRA study.
 """
 
 # Useful references:
-# * NCBI SRA Toolkit docs: https://www.ncbi.nlm.nih.gov/sra/docs/toolkitsoft/
+# * NCBI SRA Toolkit docs: https://www.ncbi.nlm.nih.gov/sra/docs/
 # * NCBI SRA Toolkit repo: https://github.com/ncbi/sra-tools
 # * NCBI SRA Toolkit wiki: https://github.com/ncbi/sra-tools/wiki
 
