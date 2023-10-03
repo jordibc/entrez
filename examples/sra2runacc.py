@@ -18,19 +18,19 @@ import argparse
 import re
 
 sys.path.append('..')
-import entrez
+import entrez as ez
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-s', '--sra', metavar='SRAid',
-                        help='SRA identifier')
+    parser.add_argument('sra', metavar='SRAid', help='SRA identifier')
     args = parser.parse_args()
 
-    for line in entrez.on_search(db='sra', term=args.sra, tool='summary'):
+    for line in ez.on_search(db='sra', term=args.sra, tool='summary'):
         if 'Name="Runs"' in line:
             acc = re.search('acc=\"(?P<acc>\w+[0-9]+)\"', line).group('acc')
             print(acc)
+
 
 
 if __name__ == '__main__':
