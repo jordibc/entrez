@@ -1,9 +1,17 @@
 # Entrez - Call the NCBI E-utilities from Python
 
 A simple Python interface to **query the biological databases** kept
-at the NCBI. It uses the Entrez Programming Utilities (*E-utilities*),
-nine server-side programs that access the Entrez query and database
-system at the National Center for Biotechnology Information (NCBI).
+at the NCBI.
+
+It uses the [Entrez Programming
+Utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
+(*E-utilities*), nine server-side programs that access the Entrez
+query and database system at the National Center for Biotechnology
+Information (NCBI). They provide a structured interface to the Entrez
+system, which currently includes 38 databases covering a variety of
+biomedical data, including nucleotide and protein sequences, gene
+records, three-dimensional molecular structures, and the biomedical
+literature.
 
 The interface is in the file ``entrez.py``. It contains:
 
@@ -15,7 +23,7 @@ The interface is in the file ``entrez.py``. It contains:
  * ``on_search(db, term, tool[, db2, ...])`` - Yield the response of applying a
     tool over the results of a search query.
 
-The most useful function is `equery`. The function `eselect` makes a
+The main function is `equery`. The function `eselect` makes a
 selection of elements on the server, that can be referenced later for
 future queries (instead of downloading a long list of ids that then we
 would have to send to the server again). The function `eapply` can run
@@ -23,6 +31,10 @@ a tool like `equery`, but using a previous selection of elements (made
 with `eselect`). Finally, `on_search` is a convenience function that
 combines the results of a `eselect` on an `eapply`, which is a very
 common case.
+
+The data often comes as xml. For convenience, there is also the
+function ``read_xml(xml_str)`` that converts it to a python dictionary
+closely resembling the original structure of the data.
 
 
 ## Installation
@@ -54,9 +66,8 @@ Get a summary of nucleotides related to accession numbers
 ```py
 import entrez as ez
 
-for line in ez.on_search(db='nucleotide',
-                         term='NC_010611.1[accn] OR EU477409.1[accn]',
-                         tool='summary'):
+for line in ez.on_search(tool='summary', db='nucleotide',
+                         term='NC_010611.1[accn] OR EU477409.1[accn]'):
     print(line)
 ```
 
