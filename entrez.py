@@ -93,7 +93,7 @@ def eselect(tool, db, elems=None, **params):
     for line in equery(tool=tool, usehistory='y', db=db, **params):
         for k in ['WebEnv', 'QueryKey', 'Count']:
             if k not in elems_new and f'<{k}>' in line:
-                elems_new[k] = search(f'<{k}>(\S+)</{k}>', line).groups()[0]
+                elems_new[k] = re.search(f'<{k}>(\\S+)</{k}>', line).groups()[0]
     return elems_new
 
 
