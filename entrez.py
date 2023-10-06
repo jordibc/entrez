@@ -43,11 +43,24 @@ from itertools import groupby
 from xml.etree import ElementTree
 
 
-_valid_tools = 'info search post summary fetch link gquery citmatch'.split()
-_valid_params = ('db dbfrom term id cmd linkname usehistory query_key WebEnv '
-                 'rettype retmode retstart retmax api_key').split()
-
 API_KEY = None
+
+_valid_tools = [
+    'info', 'search', 'post', 'summary', 'fetch', 'link', 'gquery', 'spell',
+    'citmatch']
+
+_valid_params = [
+    'db', 'dbfrom', 'term', 'id', 'cmd', 'linkname', 'usehistory', 'query_key',
+    'WebEnv', 'rettype', 'retmode', 'retstart', 'retmax', 'api_key']
+
+_valid_databases = [
+    'bioproject', 'biosample', 'books', 'cdd', 'gap', 'dbvar', 'gene',
+    'genome', 'gds', 'geoprofiles', 'homologene', 'mesh', 'toolkit',
+    'nlmcatalog', 'nuccore', 'popset', 'probe', 'protein', 'proteinclusters',
+    'pcassay', 'pccompound', 'pcsubstance', 'pubmed', 'pmc', 'snp', 'sra',
+    'structure', 'taxonomy']
+# From https://www.ncbi.nlm.nih.gov/books/
+# NBK25497/table/chapter2.T._entrez_unique_identifiers_ui/
 
 
 def equery(tool='search', raw_params='', **params):
@@ -56,7 +69,11 @@ def equery(tool='search', raw_params='', **params):
     assert tool in _valid_tools, f'Invalid web tool: {tool}'
     for k in params:
         assert k in _valid_params, f'Unknown parameter: {k}'
-    # We could check better than this, but it's probably unnecessary.
+    for dbparam in ['db', 'dbfrom']:
+        if dbparam in params:
+            assert params[dbparam] in _valid_databases, \
+                'Unknown database: %s' % params[dbparam]  # but maybe it's new!
+    # We could check more and better than this, but it's probably unnecessary.
 
     # Make a POST request and yield the lines of the response.
     url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/e{tool}.fcgi'
