@@ -198,7 +198,7 @@ def application_2():
     query = ' OR '.join(a + '[accn]' for a in accs)
 
     # Output: FASTA data.
-    for line in ez.on_search(db='nuccore', term=query,
+    for line in ez.on_search(term=query, db='nuccore',
                              tool='fetch', rettype='fasta'):
         print(line)
 
@@ -210,7 +210,7 @@ def application_3():
     """
     query = 'chimpanzee[orgn] AND biomol mrna[prop]'
     with open('chimp.fna', 'w') as fout:
-        for line in ez.on_search(db='nucleotide', term=query,
+        for line in ez.on_search(term=query, db='nucleotide',
                                  tool='fetch', rettype='fasta'):
             fout.write(line + '\n')
     print('The results are in file chimp.fna.')
@@ -284,10 +284,10 @@ if __name__ == '__main__':
 #
 #    query = 'asthma[mesh] AND leukotrienes[mesh] AND 2009[pdat]'
 #
-#    for line in ez.on_search(db='pubmed', term=query, tool='summary'):
+#    for line in ez.on_search(term=query, db='pubmed', tool='summary'):
 #        print(line)
 #
-#    for line in ez.on_search(db='pubmed', term=query, tool='fetch',
+#    for line in ez.on_search(term=query, db='pubmed', tool='fetch',
 #                             rettype='abstract'):
 #        print(line)
 #
@@ -300,10 +300,10 @@ if __name__ == '__main__':
 #
 #    id_list = '194680922,50978626,28558982,9507199,6678417'
 #
-#    for line in ez.on_search(db='protein', term=id_list, tool='summary'):
+#    for line in ez.on_search(term=id_list, db='protein', tool='summary'):
 #        print(line)
 #
-#    for line in ez.on_search(db='protein', term=id_list, tool='fetch',
+#    for line in ez.on_search(term=id_list, db='protein', tool='fetch',
 #                             rettype='fasta'):
 #        print(line)
 #

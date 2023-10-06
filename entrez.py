@@ -5,8 +5,8 @@ eselect(tool, db[, elems, ...]) - Return a dict that references the elements
     selected with tool over database db.
 eapply(tool, db, elems[, retmax, ...]) - Yield the response of applying
     a tool on db for the selected elements.
-on_search(db, term, tool[, db2, ...]) - Yield the response of applying a
-    tool over the results of a search query.
+on_search(term, db, tool[, db2, ...]) - Yield the response of applying a
+    tool over the results of a search query (of term in database db).
 
 Examples of use:
 
@@ -19,8 +19,8 @@ Examples of use:
 * Get a summary of nucleotides related to accession numbers
   NC_010611.1 and EU477409.1
 
-  for line in on_search(tool='summary', db='nucleotide',
-                        term='NC_010611.1[accn] OR EU477409.1[accn]'):
+  for line in on_search(term='NC_010611.1[accn] OR EU477409.1[accn]',
+                        db='nucleotide', tool='summary'):
       print(line)
 
 """
@@ -116,15 +116,15 @@ def eapply(tool, db, elems, retmax=500, **params):
             yield line
 
 
-def on_search(db, term, tool, db2=None, **params):
+def on_search(term, db, tool, db2=None, **params):
     """Yield the results of querying db with term, and using tool over them.
 
     Select (search) the elements in database db that satisfy the query
     in term, and yield the output of applying the given tool on them.
 
     Args:
-      db: Database where the query is done.
       term: Query term that selects elements to process later.
+      db: Database where the query is done.
       tool: E-utility that is used on the selected elements.
       db2: Database where tool is applied. If None, it's the same as db.
       params: Extra parameters to use with the E-utility.

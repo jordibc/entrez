@@ -55,7 +55,7 @@ def get_args():
 def print_acc2gi(accessions):
     """Print GIs corresponding to the given accession numbers."""
     term = ' OR '.join(a + '[accn]' for a in accessions)
-    for line in entrez.on_search(db='nucleotide', term=term, tool='summary'):
+    for line in entrez.on_search(term=term, db='nucleotide', tool='summary'):
         if 'Name="Extra"' in line and any(a in line for a in accessions):
             gi = re.search('gi\|([0-9]+)\|', line).group(1)
             acc = re.search('((emb)|(gb)|(ref)|(dbj))\|(?P<acc>\w+\.[0-9]+)\|',

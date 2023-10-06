@@ -20,8 +20,8 @@ The interface is in the file ``entrez.py``. It contains:
     selected with tool over database db.
  * ``eapply(tool, db, elems[, retmax, ...])`` - Yield the response of applying
     a tool on db for the selected elements.
- * ``on_search(db, term, tool[, db2, ...])`` - Yield the response of applying a
-    tool over the results of a search query.
+ * ``on_search(term, db, tool[, db2, ...])`` - Yield the response of applying a
+    tool over the results of a search query (of term in database db).
 
 The main function is `equery`. The function `eselect` makes a
 selection of elements on the server, that can be referenced later for
@@ -66,8 +66,9 @@ Get a summary of nucleotides related to accession numbers
 ```py
 import entrez as ez
 
-for line in ez.on_search(tool='summary', db='nucleotide',
-                         term='NC_010611.1[accn] OR EU477409.1[accn]'):
+for line in ez.on_search(term='NC_010611.1[accn] OR EU477409.1[accn]',
+                         db='nucleotide', tool='summary'):
+
     print(line)
 ```
 
@@ -79,9 +80,8 @@ format (our version of the [sample application
 import entrez as ez
 
 with open('chimp.fna', 'w') as fout:
-    for line in ez.on_search(db='nucleotide',
-                             term='chimpanzee[orgn] AND biomol mrna[prop]',
-                             tool='fetch', rettype='fasta'):
+    for line in ez.on_search(term='chimpanzee[orgn] AND biomol mrna[prop]',
+                             db='nucleotide', tool='fetch', rettype='fasta'):
         fout.write(line + '\n')
 ```
 
