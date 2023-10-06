@@ -17,7 +17,7 @@ import sys
 import argparse
 import re
 
-sys.path.append('..')
+sys.path += ['.', '..']
 import entrez as ez
 
 

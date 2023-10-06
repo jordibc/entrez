@@ -7,9 +7,13 @@ that appear in https://www.ncbi.nlm.nih.gov/books/NBK25498
 
 import sys
 
-sys.path.append('..')
+sys.path += ['.', '..']
 import entrez as ez
 
+
+# For teaching purposes, the E-utilities sample applications are
+# translated in a straighforward way. For a slightly better way of
+# doing the same thing, see the notes at the end of this file.
 
 def sample_1():
     """ESearch - ESummary/EFetch
@@ -32,22 +36,6 @@ def sample_1():
                           rettype='abstract'):
         print(line)
 
-# We could do the same with:
-#
-#    query = 'asthma[mesh] AND leukotrienes[mesh] AND 2009[pdat]'
-#
-#    for line in ez.on_search(db='pubmed', term=query, tool='summary'):
-#        print(line)
-#
-#    for line in ez.on_search(db='pubmed', term=query, tool='fetch',
-#                             rettype='abstract'):
-#        print(line)
-#
-# by using on_search twice, we call 'search' two times instead
-# of calling it once and keeping the resulting QueryKey and WebEnv
-# for future queries. In many cases (as in these examples), you
-# pay very little for that.
-
 
 def sample_2():
     """EPost - ESummary/EFetch
@@ -67,21 +55,6 @@ def sample_2():
     for line in ez.eapply(tool='fetch', db='protein', elems=elems,
                           rettype='fasta'):
         print(line)
-
-# We could do the same with:
-#
-#    id_list = '194680922,50978626,28558982,9507199,6678417'
-#
-#    for line in ez.on_search(db='protein', term=id_list, tool='summary'):
-#        print(line)
-#
-#    for line in ez.on_search(db='protein', term=id_list, tool='fetch',
-#                             rettype='fasta'):
-#        print(line)
-#
-# by using on_search we call first internally 'search' instead
-# of 'post' as in the original example, but the resulting ids that
-# will be used later are the same, so it works great.
 
 
 def sample_3():
@@ -277,17 +250,13 @@ def application_4():
                     links.append(gid)
     print('The results are in file snp_table.')
 
-# Note that (as of Dec 2017) there is a mistake in the original perl code at
+# Note that (since at least 2016 and as of Oct 2023) there is a
+# mistake in the original perl code at
 # https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_4_Finding_unique_se
-# It basically forgets to do "links = []" and so the snps accumulate for each
-# successive gene that appears in the output file.
+# It basically forgets to do the equivalent of "links = []" and so the
+# snps accumulate for each successive gene that appears in the output file.
 
 
-
-try:
-   input = raw_input  # in case this is run with python 2
-except NameError:
-   pass
 
 if __name__ == '__main__':
     # Let the user choose which sample to run.
@@ -307,3 +276,37 @@ if __name__ == '__main__':
             print('\nBye!')
             break
         functions[choice]()
+
+
+# We could do some of the examples in an easier way. For example...
+#
+# For sample_1():
+#
+#    query = 'asthma[mesh] AND leukotrienes[mesh] AND 2009[pdat]'
+#
+#    for line in ez.on_search(db='pubmed', term=query, tool='summary'):
+#        print(line)
+#
+#    for line in ez.on_search(db='pubmed', term=query, tool='fetch',
+#                             rettype='abstract'):
+#        print(line)
+#
+# by using on_search twice, we call 'search' two times instead
+# of calling it once and keeping the resulting QueryKey and WebEnv
+# for future queries. In many cases (as in these examples), you
+# pay very little for that.
+#
+# For sample_2():
+#
+#    id_list = '194680922,50978626,28558982,9507199,6678417'
+#
+#    for line in ez.on_search(db='protein', term=id_list, tool='summary'):
+#        print(line)
+#
+#    for line in ez.on_search(db='protein', term=id_list, tool='fetch',
+#                             rettype='fasta'):
+#        print(line)
+#
+# by using on_search we call first internally 'search' instead
+# of 'post' as in the original example, but the resulting ids that
+# will be used later are the same, so it works great.

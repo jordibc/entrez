@@ -9,7 +9,7 @@ import sys
 import re
 import argparse
 
-sys.path.append('..')
+sys.path += ['.', '..']
 import entrez
 
 
