@@ -131,14 +131,14 @@ def on_search(db, term, tool, db2=None, **params):
       params: Extra parameters to use with the E-utility.
      """
     # Convenience function, it is used so often.
-    for line in eapply(elems=eselect(tool='search', db=db, term=term),
-                       db=(db2 or db), tool=tool, **params):
+    elems = eselect(tool='search', db=db, term=term)
+    for line in eapply(tool=tool, db=(db2 or db), elems=elems, **params):
         yield line
 
 
 # Convenient translations.
 #
-# Many results come as a xml string, and it would be very nice to
+# Many results come as an xml string, and it would be very nice to
 # manage them as python dictionaries.
 
 def read_xml(xml_str):
