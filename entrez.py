@@ -164,16 +164,16 @@ def xml_node_to_dict(node):
     tags = [n.tag for n in node]  # all tags in children nodes
     ntags = len(set(tags))  # number of different tags in children
 
-    if len(tags) == 0:  # no children
+    if len(tags) == 0:  # no children -> add its text
         if len(subdict) == 0:
             return {tag: node.text or ''}
         else:
             return {tag: dict(subdict, text=(node.text or ''))}
-    elif len(tags) == ntags:  # all tags are different
+    elif len(tags) == ntags:  # all tags are different -> add a dict
         for n in node:
             subdict.update(xml_node_to_dict(n))  # add content from subnodes
         return {tag: subdict}
-    elif ntags == 1:  # all tags are the same
+    elif ntags == 1:  # all tags are the same -> add a list
         if len(subdict) == 0:
             return {tag: [xml_node_to_dict(n) for n in node]}
         else:
@@ -181,8 +181,10 @@ def xml_node_to_dict(node):
                               children=[xml_node_to_dict(n) for n in node])}
     else:  # some tags are the same and others aren't... what the heck
         nodes = sorted((n for n in node), key=lambda n: n.tag)
+
         for gtag, group_tag in groupby(nodes, lambda n: n.tag):
             nodes_tag = list(group_tag)  # don't exhaust the iterator
+
             if len(nodes_tag) == 1:
                 subdict.update(xml_node_to_dict(nodes_tag[0]))
             else:
