@@ -35,9 +35,9 @@ Examples of use:
 #     /NBK25497/#chapter2.The_Nine_Eutilities_in_Brief
 #
 
-from re import search
-from urllib.parse import urlencode
-from urllib.request import urlopen
+import re
+import urllib.parse, urllib.request, urllib.error
+
 from itertools import groupby
 from xml.etree import ElementTree
 
@@ -71,9 +71,12 @@ def equery(tool='search', raw_params='', **params):
     if not 'api_key' in params and not 'api_key' in raw_params and API_KEY:
         params['api_key'] = API_KEY
 
-    data = (urlencode(params) + raw_params).encode('ascii')
-    for line_bytes in urlopen(url, data):
-        yield line_bytes.decode('ascii', errors='ignore').rstrip()
+    data = (urllib.parse.urlencode(params) + raw_params).encode('ascii')
+    try:
+        for line_bytes in urllib.request.urlopen(url, data):
+            yield line_bytes.decode('ascii', errors='ignore').rstrip()
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f'On POST request to {url} with {data}: {e}')
 
 
 def eselect(tool, db, elems=None, **params):
