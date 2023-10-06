@@ -37,7 +37,6 @@ def test_on_search():
     xml = ''.join(ez.on_search(term='NC_010611.1[accn] OR EU477409.1[accn]',
                                db='nucleotide', tool='summary'))
 
-
     results = ez.read_xml(xml)['eSummaryResult']
 
     assert len(results) == 2
