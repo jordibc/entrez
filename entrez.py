@@ -53,14 +53,9 @@ _valid_params = [
     'db', 'dbfrom', 'term', 'id', 'cmd', 'linkname', 'usehistory', 'query_key',
     'WebEnv', 'rettype', 'retmode', 'retstart', 'retmax', 'api_key']
 
-_valid_databases = [
-    'bioproject', 'biosample', 'books', 'cdd', 'gap', 'dbvar', 'gene',
-    'genome', 'gds', 'geoprofiles', 'homologene', 'mesh', 'toolkit',
-    'nlmcatalog', 'nuccore', 'popset', 'probe', 'protein', 'proteinclusters',
-    'pcassay', 'pccompound', 'pcsubstance', 'pubmed', 'pmc', 'snp', 'sra',
-    'structure', 'taxonomy']
-# From https://www.ncbi.nlm.nih.gov/books/
-# NBK25497/table/chapter2.T._entrez_unique_identifiers_ui/
+# We could have a list of valid databases too, for example from
+# https://www.ncbi.nlm.nih.gov/books/NBK25497/table/chapter2.T._entrez_unique_identifiers_ui/
+# but it is missing some, like 'nucleotide'.
 
 
 def equery(tool='search', raw_params='', **params):
@@ -69,10 +64,6 @@ def equery(tool='search', raw_params='', **params):
     assert tool in _valid_tools, f'Invalid web tool: {tool}'
     for k in params:
         assert k in _valid_params, f'Unknown parameter: {k}'
-    for dbparam in ['db', 'dbfrom']:
-        if dbparam in params:
-            assert params[dbparam] in _valid_databases, \
-                'Unknown database: %s' % params[dbparam]  # but maybe it's new!
     # We could check more and better than this, but it's probably unnecessary.
 
     # Make a POST request and yield the lines of the response.
