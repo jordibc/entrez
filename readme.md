@@ -114,6 +114,18 @@ and from that point on, all the queries will have the API key
 automatically incorporated.
 
 
+## Tests
+
+You can run the tests in the `tests` directory with:
+
+```sh
+pytest
+```
+
+which will run all the functions that start with `test_` in the
+`test_*.py` files.
+
+
 ## References
 
  * [Introduction to the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
