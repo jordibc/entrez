@@ -19,9 +19,8 @@ Examples of use:
 * Get a summary of nucleotides related to accession numbers
   NC_010611.1 and EU477409.1
 
-  for line in on_search(db='nucleotide',
-                        term='NC_010611.1[accn] OR EU477409.1[accn]',
-                        tool='summary'):
+  for line in on_search(tool='summary', db='nucleotide',
+                        term='NC_010611.1[accn] OR EU477409.1[accn]'):
       print(line)
 
 """

@@ -33,8 +33,8 @@ combines the results of a `eselect` on an `eapply`, which is a very
 common case.
 
 The data often comes as xml. For convenience, there is also the
-function ``read_xml(xml_str)`` that converts it to a python dictionary
-closely resembling the original structure of the data.
+function ``read_xml`` that converts it to a python dictionary closely
+resembling the original structure of the data.
 
 
 ## Installation
