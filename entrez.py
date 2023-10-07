@@ -94,14 +94,18 @@ def eselect(tool, db, elems=None, **params):
         for k in ['WebEnv', 'QueryKey', 'Count']:
             if k not in elems_new and f'<{k}>' in line:
                 elems_new[k] = re.search(f'<{k}>(\\S+)</{k}>', line).groups()[0]
+
+    assert 'WebEnv' in elems_new and 'QueryKey' in elems_new, \
+        f'Expected WebEnv and QueryKey in result of "usehistory": {elems_new}'
+
     return elems_new
 
 
 def eapply(tool, db, elems, retmax=500, **params):
     """Yield the results of applying tool on db for the selected elements.
 
-    For the selected elements (referenced in dict elems) from a previous query
-    apply tool on database db, and yield the output.
+    Apply tool on database db, for the selected elements (referenced
+    in dict elems) from a previous query, and yield the output.
 
     Args:
       tool: E-utility that is used on the selected elements.
@@ -110,6 +114,9 @@ def eapply(tool, db, elems, retmax=500, **params):
       retmax: Chunk size of the reading from the NCBI servers.
       params: Extra parameters to use with the E-utility.
     """
+    assert 'WebEnv' in elems and 'QueryKey' in elems, \
+        f'Expected WebEnv and QueryKey in elems: {elems}'
+
     # Ask for the results of using tool over the selected elements, in
     # batches of retmax each.
     for retstart in range(0, int(elems.get('Count', '1')), retmax):
