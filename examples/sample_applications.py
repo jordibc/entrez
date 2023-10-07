@@ -264,17 +264,20 @@ if __name__ == '__main__':
     functions = [
         sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,
         application_1, application_2, application_3, application_4]
-    docs = [f.__doc__.split('\n')[0] for f in functions]  # 1st line of docs
+    docs = [f.__doc__ for f in functions]  # docstrings
 
     while True:
         for i in range(len(functions)):
-            print('  %3d - %s' % (i + 1, docs[i]))
+            print('  %3d - %s' % (i + 1, docs[i].splitlines()[0]))
         try:
             choice = int(input('Sample to run: ')) - 1
             assert 0 <= choice < len(functions)
         except (ValueError, AssertionError, KeyboardInterrupt, EOFError):
             print('\nBye!')
             break
+
+        print(docs[choice])
+        print('Running...')
         functions[choice]()
 
 
