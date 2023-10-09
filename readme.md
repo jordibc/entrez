@@ -112,7 +112,7 @@ it can be initialized at the module level with:
 
 ```py
 import entrez as ez
-ez.EMAIL = me@here.edu'
+ez.EMAIL = 'me@here.edu'
 ```
 
 and from that point on, all the queries will have the email
