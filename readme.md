@@ -13,39 +13,41 @@ biomedical data, including nucleotide and protein sequences, gene
 records, three-dimensional molecular structures, and the biomedical
 literature.
 
-The interface is in the file ``entrez.py``. It contains:
+The main function is:
 
- * ``equery(tool[, ...])`` - Yield the response of a query with the given tool.
- * ``eselect(tool, db[, ...])`` - Return a dict that references the elements
-    selected with tool over database db.
- * ``eapply(tool, db, elems[, retmax, ...])`` - Yield the response of applying
-    a tool on db for the selected elements.
- * ``on_search(term, db, tool[, db2, ...])`` - Yield the response of applying a
-    tool over the results of a search query (of term in database db).
+* `equery(tool[, ...])` - yields the response of a query with the given tool
 
-The main function is `equery`. The function `eselect` makes a
-selection of elements on the server, that can be referenced later for
-future queries (instead of downloading a long list of ids that then we
-would have to send to the server again). The function `eapply` can run
-a tool like `equery`, but using a previous selection of elements (made
-with `eselect`). Finally, `on_search` is a convenience function that
-combines the results of a `eselect` on an `eapply`, which is a very
-common case.
+The function `eselect` makes a selection of elements on the server,
+that can be referenced later for future queries (instead of
+downloading a long list of ids that then we would have to send to the
+server again). The function `eapply` can run a tool like `equery`, but
+using a previous selection of elements (made with `eselect`):
+
+* `eselect(tool, db[, ...])` - returns a dict that references the elements
+   selected with tool over database db
+* `eapply(tool, db, elems[, retmax, ...])` - yields the response of applying
+   a tool on db for the selected elements
+
+Finally, `on_search` is a convenience function that combines the
+results of a `eselect` on an `eapply`, which is a very common case.
+
+* `on_search(term, db, tool[, db2, ...])` - yields the response of applying a
+   tool over the results of a search query (of term in database db)
 
 The data often comes as xml. For convenience, there is also the
-function ``read_xml`` that converts it to a python dictionary closely
+function `read_xml` that converts it to a python dictionary closely
 resembling the original structure of the data.
 
 
 ## Installation
 
 You can run from this directory without installing anything, or simply
-put ``entrez.py`` in a place where your python interpreter can find it
+put `entrez.py` in a place where your python interpreter can find it
 (for example, you can add this directory to your
 [PYTHONPATH](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)).
 
-Really. There is no need to ``pip install`` anything. Everything is in
-just one file.
+Really. There is no need to `pip install` anything (but if you want,
+you can `pip install -e .`). Everything is in just one file.
 
 
 ## Examples
@@ -105,7 +107,7 @@ Guidelines](https://www.ncbi.nlm.nih.gov/books/NBK25499/)" for
 example).
 
 You can pass it to any of the functions in this module as an argument
-(for example, `query(..., email='me@here.edu')`), or more comfortably
+(for example, `equery(..., email='me@here.edu')`), or more comfortably
 it can be initialized at the module level with:
 
 ```py
@@ -118,8 +120,9 @@ automatically incorporated.
 
 Similarly, an [API
 key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
-can be passed to any of the functions as an argument (`query(..., api_key='ABCD123')`),
-or initialized and incorporated automatically from that moment with:
+can be passed to any of the functions as an argument
+(`equery(..., api_key='ABCD123')`), or initialized and incorporated
+automatically from that moment with:
 
 ```py
 import entrez as ez

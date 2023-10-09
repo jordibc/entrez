@@ -1,31 +1,7 @@
-"""Simple interface to the amazing NCBI databases (Entrez).
-
-equery(tool[, ...]) - Yield the response of a query with the given tool.
-eselect(tool, db[, elems, ...]) - Return a dict that references the elements
-    selected with tool over database db.
-eapply(tool, db, elems[, retmax, ...]) - Yield the response of applying
-    a tool on db for the selected elements.
-on_search(term, db, tool[, db2, ...]) - Yield the response of applying a
-    tool over the results of a search query (of term in database db).
-
-Examples of use:
-
-* Fetch information for SNP with id 3000, as in the example of
-  https://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm
-
-  for line in equery(tool='fetch', db='snp', id='3000'):
-      print(line)
-
-* Get a summary of nucleotides related to accession numbers
-  NC_010611.1 and EU477409.1
-
-  for line in on_search(term='NC_010611.1[accn] OR EU477409.1[accn]',
-                        db='nucleotide', tool='summary'):
-      print(line)
-
+"""
+Simple interface to the amazing NCBI databases (Entrez).
 """
 
-#
 # Useful references (at https://www.ncbi.nlm.nih.gov/books):
 # * Converting accession numbers:
 #     /NBK25498/#chapter3.Application_2_Converting_access
@@ -33,7 +9,6 @@ Examples of use:
 #     /NBK25498/#chapter3.Application_3_Retrieving_large
 # * E-utilities:
 #     /NBK25497/#chapter2.The_Nine_Eutilities_in_Brief
-#
 
 import re
 import urllib.parse, urllib.request, urllib.error
@@ -45,13 +20,39 @@ from xml.etree import ElementTree
 EMAIL = None
 API_KEY = None
 
-_valid_tools = [
+_valid_tools = {
     'info', 'search', 'post', 'summary', 'fetch', 'link', 'gquery', 'spell',
-    'citmatch']
+    'citmatch'}
 
-_valid_params = [
-    'db', 'dbfrom', 'term', 'id', 'cmd', 'linkname', 'usehistory', 'query_key',
-    'WebEnv', 'rettype', 'retmode', 'retstart', 'retmax', 'email', 'api_key']
+_required = {  # required arguments for each tool
+    'info': {},
+    'search': {'db', 'term'},
+    'post': {'db', 'id'},
+    'summary': {'db'},
+    'fetch': {'db'},
+    'link': {'db', 'dbfrom'},
+    'gquery': {'term'},
+    'spell': {'db', 'term'},
+    'citmatch': {'db', 'rettype' 'bdata'}}
+
+_optional = {  # optional arguments for each tool
+    'info': {'db', 'version', 'retmode'},
+    'search': {'usehistory', 'WebEnv', 'query_key', 'retstart', 'retmax',
+               'rettype', 'retmode', 'sort', 'field', 'idtype', 'datetype',
+               'reldate', 'mindate', 'maxdate'},
+    'post': {'WebEnv'},
+    'summary': {'id', 'query_key', 'WebEnv', 'retstart', 'retmax', 'rettype',
+                'retmode', 'version'},
+    'fetch': {'id', 'cmd', 'query_key', 'WebEnv', 'retstart', 'retmax',
+              'rettype', 'retmode', 'strand', 'seq_start', 'seq_stop',
+              'complexity'},
+    'link': {'id', 'query_key', 'WebEnv', 'retmode', 'idtype', 'linkname',
+             'term', 'holding', 'datetype', 'reldate', 'mindate', 'maxdate'},
+    'gquery': {},
+    'spell': {},
+    'citmatch': {}}
+# For all the available arguments/parameters, see:
+# https://www.ncbi.nlm.nih.gov/books/NBK25499/
 
 # We could have a list of valid databases too, for example from
 # https://www.ncbi.nlm.nih.gov/books/NBK25497/table/chapter2.T._entrez_unique_identifiers_ui/
@@ -61,9 +62,13 @@ _valid_params = [
 def equery(tool='search', raw_params='', **params):
     """Yield the response of a query with the given tool."""
     # First make some basic checks.
-    assert tool in _valid_tools, f'Invalid web tool: {tool}'
-    for k in params:
-        assert k in _valid_params, f'Unknown parameter: {k}'
+    assert tool in _valid_tools, \
+        f'Invalid web tool "{tool}". Valid tools are: {_valid_tools}'
+    for p in _required[tool]:
+        assert p in params, f'Missing required argument: {p}'
+    for p in params:
+        assert p in _required[tool] | _optional[tool] | {'api_key', 'email'}, \
+            f'Unknown argument: {p}'
     # We could check more and better than this, but it's probably unnecessary.
 
     # Make a POST request and yield the lines of the response.
@@ -90,16 +95,19 @@ def eselect(tool, db, elems=None, **params):
     if elems and 'QueryKey' in elems:
         params['query_key'] = elems['QueryKey']
 
-    # Use tool with usehistory='y' to select the elements,
-    # and keep the values of WebEnv, QueryKey and Count in the elems_new dict.
+    # Use search with usehistory='y' to select the elements.
+    if tool == 'search':
+        params['usehistory'] = 'y'
+
+    # Keep the values of WebEnv, QueryKey and Count in the elems_new dict.
     elems_new = {}
-    for line in equery(tool=tool, usehistory='y', db=db, **params):
+    for line in equery(tool=tool, db=db, **params):
         for k in ['WebEnv', 'QueryKey', 'Count']:
             if k not in elems_new and f'<{k}>' in line:
                 elems_new[k] = re.search(f'<{k}>(\\S+)</{k}>', line).groups()[0]
 
     assert 'WebEnv' in elems_new and 'QueryKey' in elems_new, \
-        f'Expected WebEnv and QueryKey in result of "usehistory": {elems_new}'
+        f'Expected WebEnv and QueryKey in result of selection: {elems_new}'
 
     return elems_new
 
@@ -153,8 +161,9 @@ def on_search(term, db, tool, db2=None, **params):
 # Many results come as an xml string, and it would be very nice to
 # manage them as python dictionaries.
 
-def read_xml(xml_str):
+def read_xml(xml):
     """Return the given xml string as a dictionary."""
+    xml_str = xml if type(xml) == str else '\n'.join(xml)
     return xml_node_to_dict(ElementTree.XML(xml_str))
 
 
