@@ -68,7 +68,6 @@ import entrez as ez
 
 for line in ez.on_search(term='NC_010611.1[accn] OR EU477409.1[accn]',
                          db='nucleotide', tool='summary'):
-
     print(line)
 ```
 
@@ -97,21 +96,35 @@ uses the library to convert accession numbers into GIs, and
 accession numbers for a given SRA study.
 
 
-## API keys
+## Email and API keys
 
-An [API
-key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
-can be passed to any of the functions as an argument (for example,
-`equery(..., api_key='ABCD123')`), or it can be initialized at the
-module level with:
+The NCBI now asks for all requests to include `email` as a parameter,
+with the email address of the user making the request (see their
+"[General Usage
+Guidelines](https://www.ncbi.nlm.nih.gov/books/NBK25499/)" for
+example).
+
+You can pass it to any of the functions in this module as an argument
+(for example, `query(..., email='me@here.edu')`), or more comfortably
+it can be initialized at the module level with:
 
 ```py
-import entrez
-entrez.API_KEY = 'ABCD123'
+import entrez as ez
+ez.EMAIL = me@here.edu'
 ```
 
-and from that point on, all the queries will have the API key
+and from that point on, all the queries will have the email
 automatically incorporated.
+
+Similarly, an [API
+key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+can be passed to any of the functions as an argument (`query(..., api_key='ABCD123')`),
+or initialized and incorporated automatically from that moment with:
+
+```py
+import entrez as ez
+ez.API_KEY = 'ABCD123'
+```
 
 
 ## Tests
@@ -128,10 +141,10 @@ which will run all the functions that start with `test_` in the
 
 ## References
 
- * [Introduction to the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
- * [Retrieving large datasets](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
- * [Converting accession numbers](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_2_Converting_access)
- * [API keys](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+* [Introduction to the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
+* [Retrieving large datasets](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
+* [Converting accession numbers](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_2_Converting_access)
+* [API keys](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
 
 
 ## Extra documentation
@@ -144,3 +157,17 @@ There is some more information in the [doc](doc) directory, and on the
 
 This program is licensed under the GPL v3. See the [project
 license](doc/license.md) for further details.
+
+
+## Alternatives
+
+When I initially wrote this module (circa 2016) there were no python
+alternatives (that I could find). That also explains why I chose to
+name it simply "entrez". Thanks to a more recent module,
+[easy-entrez](https://pypi.org/project/easy-entrez/), here is a
+collection of alternatives:
+
+* [easy-entrez](https://pypi.org/project/easy-entrez/)
+* [biopython.Entrez](https://biopython.org/docs/1.74/api/Bio.Entrez.html)
+* [pubmedpy](https://github.com/dhimmel/pubmedpy)
+* [entrezpy](https://gitlab.com/ncbipy/entrezpy)

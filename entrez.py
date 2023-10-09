@@ -42,6 +42,7 @@ from itertools import groupby
 from xml.etree import ElementTree
 
 
+EMAIL = None
 API_KEY = None
 
 _valid_tools = [
@@ -50,7 +51,7 @@ _valid_tools = [
 
 _valid_params = [
     'db', 'dbfrom', 'term', 'id', 'cmd', 'linkname', 'usehistory', 'query_key',
-    'WebEnv', 'rettype', 'retmode', 'retstart', 'retmax', 'api_key']
+    'WebEnv', 'rettype', 'retmode', 'retstart', 'retmax', 'email', 'api_key']
 
 # We could have a list of valid databases too, for example from
 # https://www.ncbi.nlm.nih.gov/books/NBK25497/table/chapter2.T._entrez_unique_identifiers_ui/
@@ -68,6 +69,8 @@ def equery(tool='search', raw_params='', **params):
     # Make a POST request and yield the lines of the response.
     url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/e{tool}.fcgi'
 
+    if not 'email' in params and not 'email' in raw_params and EMAIL:
+        params['email'] = EMAIL
     if not 'api_key' in params and not 'api_key' in raw_params and API_KEY:
         params['api_key'] = API_KEY
 
