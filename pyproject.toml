@@ -1,0 +1,22 @@
+[project]
+name = "entrez"
+description = "Python interface to the Entrez query and database system at the NCBI"
+version = "1.0.0"
+authors = [
+  { name="Jordi Burguet-Castell", email="jordi.burguet.castell@gmail.com" },
+  { name="Jose Manuel Martí", email="jse.mnl@gmail.com" },
+]
+readme = "readme.md"
+license = { file="docs/license.md" }
+requires-python = ">=3.0"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+]
+dependencies = []
+
+[project.urls]
+"Homepage" = "https://gitlab.com/jordibc/entrez"
+
+[project.optional-dependencies]
+test = ["pytest>=6.0"]
