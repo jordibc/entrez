@@ -16,6 +16,7 @@ import urllib.parse, urllib.request, urllib.error
 from itertools import groupby
 from xml.etree import ElementTree
 
+import pprint
 import readline
 
 
@@ -170,7 +171,7 @@ class Nested:
     def __getitem__(self, key):
         if type(self.obj) == list:
             if type(key) == int:
-                return self.obj[key]
+                return Nested(self.obj[key])
 
             head, *rest = key.split(None, 1)
 
@@ -179,7 +180,7 @@ class Nested:
             return Nested(obj_next)[rest[0]] if rest else obj_next
 
         if key in self.obj:
-            return self.obj[key]
+            return Nested(self.obj[key])
 
         try:
             head, rest = key.split(None, 1)
@@ -190,16 +191,16 @@ class Nested:
     def __repr__(self):
         return self.obj.__repr__()
 
-    def view(self, show_object=True):
-        """Ask for a part and show its details."""
+    def view(self, print_object=True):
+        """Interactive session to get subcomponents of the object."""
         readline_init()
 
-        obj = self.obj
-        path = []
+        obj = self.obj  # start at the top level (and will select subcomponents)
+        path = []  # path to the currently selected subcomponent
 
         while True:
-            if show_object:
-                print(obj)
+            if print_object:
+                pprint.pprint(obj)
 
             if type(obj) == dict:
                 readline_set_completer(list(obj.keys()))
@@ -207,8 +208,8 @@ class Nested:
                 readline_set_completer([str(i) for i in range(len(obj))])
             else:
                 if path:
-                    print('You got it with the following path:', ' '.join(path))
-                return
+                    print('Path to the subcomponent:', ' '.join(path))
+                return obj
 
             print('\nSelection (you can use arrows, tab, Ctrl+r, etc.):', end='')
 
@@ -216,8 +217,8 @@ class Nested:
 
             if not choice:
                 if path:
-                    print('You got it with the following path:', ' '.join(path))
-                return
+                    print('Path to the subcomponent:', ' '.join(path))
+                return None  # we don't want to output some big component
 
             path.append(choice)
 
