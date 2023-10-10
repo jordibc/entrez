@@ -163,35 +163,46 @@ def on_search(term, db, tool, db2=None, **params):
 # Many results come as an xml string, and it would be very nice to
 # manage them as python dictionaries / lists.
 
-class Nested:
+class Nest:
     def __init__(self, obj):
+        assert type(obj) in [dict, list], 'Can only Nest() dict or list.'
         self.obj = obj
 
     def __getitem__(self, key):
         if type(self.obj) == list:
             if type(key) == int:
-                return Nested(self.obj[key])
+                return wrap(self.obj[key])
 
-            head, *rest = key.split(None, 1)
+            try:
+                head, *rest = key.split(None, 1)
+                item = wrap(self.obj[int(head)])
+                return item[rest[0]] if rest else item
+            except ValueError:
+                raise KeyError(key)
+        else:  # dict
+            if key in self.obj:
+                # In the unlikely case that we have a key with whitespace.
+                return wrap(self.obj[key])
 
-            obj_next = self.obj[int(head)]
-
-            return Nested(obj_next)[rest[0]] if rest else obj_next
-
-        if key in self.obj:
-            return Nested(self.obj[key])
-
-        try:
-            head, rest = key.split(None, 1)
-            return Nested(self.obj[head])[rest]
-        except ValueError:
-            raise KeyError(key)
+            try:
+                head, *rest = key.split(None, 1)
+                item = wrap(self.obj[head])
+                return item[rest[0]] if rest else item
+            except (ValueError, KeyError):
+                raise KeyError(key)
 
     def __iter__(self):
         if type(self.obj) == list:
-            yield from self.obj
+            for obj in self.obj:
+                yield wrap(obj)
         else:
-            yield from self.obj.items()
+            for key, value in self.obj.items():
+                yield key, wrap(value)
+
+    def __eq__(self, value):
+        return (type(value) in [dict, list, Nest] and
+                len(self) == len(value) and
+                all(x == y for x, y in zip(self, wrap(value))))
 
     def __repr__(self):
         return self.obj.__repr__()
@@ -203,12 +214,10 @@ class Nested:
         """Interactive session to get subcomponents of the object."""
         readline_init()
 
-        item = self  # start at the top level (and will select subcomponents)
+        obj = self.obj  # start at the top level (and will select subcomponents)
         path = []  # path to the currently selected subcomponent
 
         while True:
-            obj = item.obj
-
             if print_object:
                 pprint.pprint(obj)
 
@@ -216,25 +225,35 @@ class Nested:
                 readline_set_completer(list(obj.keys()))
             elif type(obj) == list:
                 readline_set_completer([str(i) for i in range(len(obj))])
-            else:
-                if path:
-                    print('Path to the subcomponent:', ' '.join(path))
-                return obj
 
-            print('\nSelection (you can use arrows, tab, Ctrl+r, etc.):', end='')
-
-            choice = input('\n> ')
+            print('\n[%s] Selection (you can use arrows, tab, Ctrl+r, etc.):' %
+                  ' '.join(path))
+            choice = input('> ')
 
             if not choice:
                 if path:
                     print('Path to the subcomponent:', ' '.join(path))
-                return None  # we don't want to output some big component
+                return
 
-            path.append(choice)
+            try:
+                item = Nest(obj)[choice]
+                path.append(choice)
+
+                if type(item) != Nest:  # we are done, no more nesting
+                    print('Path to the subcomponent:', ' '.join(path))
+                    print('Value:', item)
+                    return
+
+                obj = item.obj
+            except KeyError:
+                print(f'Nonexistent key: {choice}')
 
             readline.clear_history()
 
-            item = Nested(obj)[choice]
+
+def wrap(x):
+    """Return object x, but "wrapped" as Nest if it makes sense."""
+    return Nest(x) if type(x) in [dict, list] else x
 
 
 def readline_init():
@@ -266,7 +285,7 @@ def read_xml(xml):
     except ElementTree.ParseError:
         obj = [xml_node_to_dict(ElementTree.XML(x))
                for x in xml_str.splitlines()]
-    return Nested(obj)
+    return Nest(obj)
 
 
 def xml_node_to_dict(node):

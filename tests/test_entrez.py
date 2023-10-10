@@ -8,10 +8,10 @@ def test_fetch():
     data = ez.read_xml(ez.equery(tool='fetch', db='snp', id='3000'))
     summary = data['DocumentSummary']
 
-    assert dict(summary['GENES']) == {
+    assert summary['GENES'] == {
         'GENE_E': {'NAME': 'REST', 'GENE_ID': '5978'}}
 
-    assert [dict(x['MAF']) for x in summary['GLOBAL_MAFS']] == [
+    assert [x['MAF'] for x in summary['GLOBAL_MAFS']] == [
         {'STUDY': '1000Genomes', 'FREQ': 'T=0.308713/1546'},
         {'STUDY': 'ALSPAC', 'FREQ': 'T=0.377789/1456'},
         {'STUDY': 'Chileans', 'FREQ': 'T=0.442492/277'},
@@ -40,7 +40,7 @@ def test_on_search():
 
     assert len(results) == 2
 
-    assert [dict(x['Item']) for x in results[0]['DocSum']['Item-group']] == [
+    assert [x['Item'] for x in results[0]['DocSum']['Item-group']] == [
         {'@Name': 'Caption', '@Type': 'String', 'text': 'NC_010611'},
         {'@Name': 'Title', '@Type': 'String',
          'text': 'Acinetobacter baumannii ACICU, complete sequence'},
