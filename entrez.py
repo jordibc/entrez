@@ -195,10 +195,12 @@ class Nested:
         """Interactive session to get subcomponents of the object."""
         readline_init()
 
-        obj = self.obj  # start at the top level (and will select subcomponents)
+        item = self  # start at the top level (and will select subcomponents)
         path = []  # path to the currently selected subcomponent
 
         while True:
+            obj = item.obj
+
             if print_object:
                 pprint.pprint(obj)
 
@@ -224,7 +226,7 @@ class Nested:
 
             readline.clear_history()
 
-            obj = Nested(obj)[choice]
+            item = Nested(obj)[choice]
 
 
 def readline_init():
