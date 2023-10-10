@@ -159,12 +159,17 @@ def on_search(term, db, tool, db2=None, **params):
 # Convenient translations.
 #
 # Many results come as an xml string, and it would be very nice to
-# manage them as python dictionaries.
+# manage them as python dictionaries / lists.
 
 def read_xml(xml):
-    """Return the given xml string as a dictionary."""
+    """Return the given xml string as a python object."""
     xml_str = xml if type(xml) == str else '\n'.join(xml)
-    return xml_node_to_dict(ElementTree.XML(xml_str))
+
+    try:
+        return xml_node_to_dict(ElementTree.XML(xml_str))
+    except ElementTree.ParseError:
+        return [xml_node_to_dict(ElementTree.XML(x))
+                for x in xml_str.splitlines()]
 
 
 def xml_node_to_dict(node):
