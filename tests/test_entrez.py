@@ -5,13 +5,13 @@ import entrez as ez
 
 
 def test_fetch():
-    xml = ''.join(ez.equery(tool='fetch', db='snp', id='3000'))
+    data = ez.read_xml(ez.equery(tool='fetch', db='snp', id='3000'))
+    summary = data['DocumentSummary']
 
-    summary = ez.read_xml(xml)['DocumentSummary']
+    assert dict(summary['GENES']) == {
+        'GENE_E': {'NAME': 'REST', 'GENE_ID': '5978'}}
 
-    assert summary['GENES'] == {'GENE_E': {'NAME': 'REST', 'GENE_ID': '5978'}}
-
-    assert [x['MAF'] for x in summary['GLOBAL_MAFS']] == [
+    assert [dict(x['MAF']) for x in summary['GLOBAL_MAFS']] == [
         {'STUDY': '1000Genomes', 'FREQ': 'T=0.308713/1546'},
         {'STUDY': 'ALSPAC', 'FREQ': 'T=0.377789/1456'},
         {'STUDY': 'Chileans', 'FREQ': 'T=0.442492/277'},
@@ -34,14 +34,13 @@ def test_fetch():
 
 
 def test_on_search():
-    xml = ''.join(ez.on_search(term='NC_010611.1[accn] OR EU477409.1[accn]',
-                               db='nucleotide', tool='summary'))
-
-    results = ez.read_xml(xml)['eSummaryResult']
+    term = 'NC_010611.1[accn] OR EU477409.1[accn]'
+    results = ez.read_xml(ez.on_search(term=term, db='nucleotide',
+                                       tool='summary'))['eSummaryResult']
 
     assert len(results) == 2
 
-    assert [x['Item'] for x in results[0]['DocSum']['Item-group']] == [
+    assert [dict(x['Item']) for x in results[0]['DocSum']['Item-group']] == [
         {'@Name': 'Caption', '@Type': 'String', 'text': 'NC_010611'},
         {'@Name': 'Title', '@Type': 'String',
          'text': 'Acinetobacter baumannii ACICU, complete sequence'},

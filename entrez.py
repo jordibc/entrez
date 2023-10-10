@@ -187,8 +187,17 @@ class Nested:
         except ValueError:
             raise KeyError(key)
 
+    def __iter__(self):
+        if type(self.obj) == list:
+            yield from self.obj
+        else:
+            yield from self.obj.items()
+
     def __repr__(self):
         return self.obj.__repr__()
+
+    def __len__(self):
+        return len(self.obj)
 
     def view(self, print_object=True):
         """Interactive session to get subcomponents of the object."""
