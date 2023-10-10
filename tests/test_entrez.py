@@ -40,7 +40,7 @@ def test_on_search():
 
     assert len(results) == 2
 
-    assert [x['Item'] for x in results[0]['DocSum']['Item-group']] == [
+    assert [x['Item'] for x in results['0 DocSum Item-group']] == [
         {'@Name': 'Caption', '@Type': 'String', 'text': 'NC_010611'},
         {'@Name': 'Title', '@Type': 'String',
          'text': 'Acinetobacter baumannii ACICU, complete sequence'},
