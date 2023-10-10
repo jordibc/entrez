@@ -210,7 +210,7 @@ class Nest:
     def __len__(self):
         return len(self.obj)
 
-    def view(self, print_object=True):
+    def view(self):
         """Interactive session to get subcomponents of the object."""
         readline_init()
 
@@ -218,35 +218,35 @@ class Nest:
         path = []  # path to the currently selected subcomponent
 
         while True:
-            if print_object:
-                pprint.pprint(obj)
-
             if type(obj) == dict:
                 readline_set_completer(list(obj.keys()))
             elif type(obj) == list:
                 readline_set_completer([str(i) for i in range(len(obj))])
 
-            print('\n[%s] Selection (you can use arrows, tab, Ctrl+r, etc.):' %
-                  ' '.join(path))
-            choice = input('> ')
-
-            if not choice:
-                if path:
-                    print('Path to the subcomponent:', ' '.join(path))
+            print('\nSelection (you can use arrows, tab, Ctrl+r, etc.) '
+                  '(Ctrl+d exits, Enter views current selection):')
+            try:
+                prefix = "['%s'] " % ' '.join(path)
+                choice = input("%s> " % (prefix if path else ''))
+            except (EOFError, KeyboardInterrupt):
+                print()
                 return
 
-            try:
-                item = Nest(obj)[choice]
-                path.append(choice)
+            if not choice:
+                pprint.pprint(obj)
+            else:
+                try:
+                    item = Nest(obj)[choice]
+                    path.append(choice)
 
-                if type(item) != Nest:  # we are done, no more nesting
-                    print('Path to the subcomponent:', ' '.join(path))
-                    print('Value:', item)
-                    return
+                    if type(item) != Nest:  # we are done, no more nesting
+                        print("Path: ['%s']" % ' '.join(path))
+                        print('Value:', item)
+                        return
 
-                obj = item.obj
-            except KeyError:
-                print(f'Nonexistent key: {choice}')
+                    obj = item.obj
+                except KeyError:
+                    print(f'Nonexistent key: {choice}')
 
             readline.clear_history()
 
