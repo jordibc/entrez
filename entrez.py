@@ -16,11 +16,13 @@ import urllib.parse, urllib.request, urllib.error
 from itertools import groupby
 from xml.etree import ElementTree
 
+import readline
+
 
 EMAIL = None
 API_KEY = None
 
-_valid_tools = {
+_tools = {  # valid tools
     'info', 'search', 'post', 'summary', 'fetch', 'link', 'gquery', 'spell',
     'citmatch'}
 
@@ -62,8 +64,8 @@ _optional = {  # optional arguments for each tool
 def equery(tool='search', raw_params='', **params):
     """Yield the response of a query with the given tool."""
     # First make some basic checks.
-    assert tool in _valid_tools, \
-        f'Invalid web tool "{tool}". Valid tools are: {_valid_tools}'
+    assert tool in _tools, \
+        f'Invalid web tool "{tool}". Valid tools are: {_tools}'
     for p in _required[tool]:
         assert p in params, f'Missing required argument: {p}'
     for p in params:
@@ -161,15 +163,99 @@ def on_search(term, db, tool, db2=None, **params):
 # Many results come as an xml string, and it would be very nice to
 # manage them as python dictionaries / lists.
 
+class Nested:
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __getitem__(self, key):
+        if type(self.obj) == list:
+            if type(key) == int:
+                return self.obj[key]
+
+            head, *rest = key.split(None, 1)
+
+            obj_next = self.obj[int(head)]
+
+            return Nested(obj_next)[rest[0]] if rest else obj_next
+
+        if key in self.obj:
+            return self.obj[key]
+
+        try:
+            head, rest = key.split(None, 1)
+            return Nested(self.obj[head])[rest]
+        except ValueError:
+            raise KeyError(key)
+
+    def __repr__(self):
+        return self.obj.__repr__()
+
+    def view(self, show_object=True):
+        """Ask for a part and show its details."""
+        readline_init()
+
+        obj = self.obj
+        path = []
+
+        while True:
+            if show_object:
+                print(obj)
+
+            if type(obj) == dict:
+                readline_set_completer(list(obj.keys()))
+            elif type(obj) == list:
+                readline_set_completer([str(i) for i in range(len(obj))])
+            else:
+                if path:
+                    print('You got it with the following path:', ' '.join(path))
+                return
+
+            print('\nSelection (you can use arrows, tab, Ctrl+r, etc.):', end='')
+
+            choice = input('\n> ')
+
+            if not choice:
+                if path:
+                    print('You got it with the following path:', ' '.join(path))
+                return
+
+            path.append(choice)
+
+            readline.clear_history()
+
+            obj = Nested(obj)[choice]
+
+
+def readline_init():
+    """Initialize readline."""
+    readline.parse_and_bind('tab: complete')
+    readline.parse_and_bind('set show-all-if-ambiguous on')
+
+    readline.set_completer_delims('')  # use full sentence, not just words
+    readline.set_auto_history(False)  # do not add new lines to history
+
+
+def readline_set_completer(names):
+    for name in names:
+        readline.add_history(name)  # so one can scroll and search them
+
+    def completer(text, state):
+        matches = [name for name in names if text.lower() in name.lower()]
+        return matches[state] if state < len(matches) else None
+
+    readline.set_completer(completer)
+
+
 def read_xml(xml):
     """Return the given xml string as a python object."""
     xml_str = xml if type(xml) == str else '\n'.join(xml)
 
     try:
-        return xml_node_to_dict(ElementTree.XML(xml_str))
+        obj = xml_node_to_dict(ElementTree.XML(xml_str))
     except ElementTree.ParseError:
-        return [xml_node_to_dict(ElementTree.XML(x))
-                for x in xml_str.splitlines()]
+        obj = [xml_node_to_dict(ElementTree.XML(x))
+               for x in xml_str.splitlines()]
+    return Nested(obj)
 
 
 def xml_node_to_dict(node):
