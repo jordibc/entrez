@@ -89,52 +89,53 @@ def equery(tool='search', raw_params='', **params):
         raise RuntimeError(f'On POST request to {url} with {data}: {e}')
 
 
-def eselect(tool, db, elems=None, **params):
+def eselect(tool, db, previous=None, **params):
     """Use tool on db to select elements and return dict for future queries."""
     # If there are previous elements selected, take them into account.
-    if elems and 'WebEnv' in elems:
-        params['WebEnv'] = elems['WebEnv']
-    if elems and 'QueryKey' in elems:
-        params['query_key'] = elems['QueryKey']
+    if previous and 'WebEnv' in previous:
+        params['WebEnv'] = previous['WebEnv']
+    if previous and 'QueryKey' in previous:
+        params['query_key'] = previous['QueryKey']
 
     # Use search with usehistory='y' to select the elements.
     if tool == 'search':
         params['usehistory'] = 'y'
 
-    # Keep the values of WebEnv, QueryKey and Count in the elems_new dict.
-    elems_new = {}
+    # Keep the values of WebEnv, QueryKey and Count in the selections dict.
+    selections = {}
     for line in equery(tool=tool, db=db, **params):
         for k in ['WebEnv', 'QueryKey', 'Count']:
-            if k not in elems_new and f'<{k}>' in line:
-                elems_new[k] = re.search(f'<{k}>(\\S+)</{k}>', line).groups()[0]
+            if k not in selections and f'<{k}>' in line:
+                selections[k] = re.search(f'<{k}>(\\S+)</{k}>', line).groups()[0]
 
-    assert 'WebEnv' in elems_new and 'QueryKey' in elems_new, \
-        f'Expected WebEnv and QueryKey in result of selection: {elems_new}'
+    assert 'WebEnv' in selections and 'QueryKey' in selections, \
+        f'Expected WebEnv and QueryKey in result of selection: {selections}'
 
-    return elems_new
+    return selections
 
 
-def eapply(tool, db, elems, retmax=500, **params):
+def eapply(tool, db, selections, retmax=500, **params):
     """Yield the results of applying tool on db for the selected elements.
 
     Apply tool on database db, for the selected elements (referenced
-    in dict elems) from a previous query, and yield the output.
+    in dict selections) from a previous query, and yield the output.
 
     Args:
       tool: E-utility that is used on the selected elements.
       db: Database where the tool is applied.
-      elems: Dict with WebEnv and QueryKey of previously selected elements.
+      selections: Dict with WebEnv and QueryKey of previously selected elements.
       retmax: Chunk size of the reading from the NCBI servers.
       params: Extra parameters to use with the E-utility.
     """
-    assert 'WebEnv' in elems and 'QueryKey' in elems, \
-        f'Expected WebEnv and QueryKey in elems: {elems}'
+    assert 'WebEnv' in selections and 'QueryKey' in selections, \
+        f'Expected WebEnv and QueryKey in selections: {selections}'
 
     # Ask for the results of using tool over the selected elements, in
     # batches of retmax each.
-    for retstart in range(0, int(elems.get('Count', '1')), retmax):
+    for retstart in range(0, int(selections.get('Count', '1')), retmax):
         for line in equery(tool=tool, db=db,
-                           WebEnv=elems['WebEnv'], query_key=elems['QueryKey'],
+                           WebEnv=selections['WebEnv'],
+                           query_key=selections['QueryKey'],
                            retstart=retstart, retmax=retmax, **params):
             yield line
 
@@ -153,8 +154,9 @@ def on_search(term, db, tool, db2=None, **params):
       params: Extra parameters to use with the E-utility.
      """
     # Convenience function, it is used so often.
-    elems = eselect(tool='search', db=db, term=term)
-    for line in eapply(tool=tool, db=(db2 or db), elems=elems, **params):
+    selections = eselect(tool='search', db=db, term=term)
+    for line in eapply(tool=tool, db=(db2 or db), selections=selections,
+                       **params):
         yield line
 
 

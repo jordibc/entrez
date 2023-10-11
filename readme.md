@@ -13,20 +13,21 @@ biomedical data, including nucleotide and protein sequences, gene
 records, three-dimensional molecular structures, and the biomedical
 literature.
 
-The main function is:
+The main function (and the only essential one) is:
 
 * `equery(tool[, ...])` - yields the response of a query with the given tool
 
 The function `eselect` makes a selection of elements on the server,
 that can be referenced later for future queries (instead of
 downloading a long list of ids that then we would have to send to the
-server again). The function `eapply` can run a tool like `equery`, but
-using a previous selection of elements (made with `eselect`):
+server again). The function `eapply` can then run a tool using a
+previous selection of elements (which can be done with `equery` too,
+but `eapply` has a simpler syntax):
 
 * `eselect(tool, db[, ...])` - returns a dict that references the elements
    selected with tool over database db
-* `eapply(tool, db, elems[, retmax, ...])` - yields the response of applying
-   a tool on db for the selected elements
+* `eapply(tool, db, selections[, retmax, ...])` - yields the response of
+   applying a tool on db for the selected elements
 
 Finally, `on_search` is a convenience function that combines the
 results of a `eselect` on an `eapply`, which is a very common case.
@@ -35,7 +36,7 @@ results of a `eselect` on an `eapply`, which is a very common case.
    tool over the results of a search query (of term in database db)
 
 The data often comes as xml. For convenience, there is also the
-function `read_xml` that converts it to a python dictionary closely
+function `read_xml` that converts it to a python object closely
 resembling the original structure of the data.
 
 

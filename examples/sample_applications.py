@@ -25,14 +25,14 @@ def sample_1():
     query = 'asthma[mesh] AND leukotrienes[mesh] AND 2009[pdat]'
 
     # Select the elements: query pubmed and keep the reference.
-    elems = ez.eselect(tool='search', db='pubmed', term=query)
+    selections = ez.eselect(tool='search', db='pubmed', term=query)
 
     # XML document summaries.
-    for line in ez.eapply(tool='summary', db='pubmed', elems=elems):
+    for line in ez.eapply(tool='summary', db='pubmed', selections=selections):
         print(line)
 
     # Formatted data records (abstracts in this case).
-    for line in ez.eapply(tool='fetch', db='pubmed', elems=elems,
+    for line in ez.eapply(tool='fetch', db='pubmed', selections=selections,
                           rettype='abstract'):
         print(line)
 
@@ -45,14 +45,14 @@ def sample_2():
     # Input: List of Entrez UIDs (integer identifiers, e.g. PMID, GI, Gene ID).
     id_list = '194680922,50978626,28558982,9507199,6678417'
 
-    elems = ez.eselect(tool='post', db='protein', id=id_list)
+    selections = ez.eselect(tool='post', db='protein', id=id_list)
 
     # XML document summaries.
-    for line in ez.eapply(tool='summary', db='protein', elems=elems):
+    for line in ez.eapply(tool='summary', db='protein', selections=selections):
         print(line)
 
     # Formatted data records (FASTA in this case).
-    for line in ez.eapply(tool='fetch', db='protein', elems=elems,
+    for line in ez.eapply(tool='fetch', db='protein', selections=selections,
                           rettype='fasta'):
         print(line)
 
@@ -67,15 +67,16 @@ def sample_3():
     id_list = '194680922,50978626,28558982,9507199,6678417'
 
     # Select elements, linking dbs protein and gene with the name protein_gene.
-    elems = ez.eselect(tool='link', dbfrom='protein', db='gene', id=id_list,
-                       linkname='protein_gene', cmd='neighbor_history')
+    selections = ez.eselect(tool='link', dbfrom='protein', db='gene',
+                            id=id_list, linkname='protein_gene',
+                            cmd='neighbor_history')
 
     # XML document summaries of selected genes.
-    for line in ez.eapply(tool='summary', db='gene', elems=elems):
+    for line in ez.eapply(tool='summary', db='gene', selections=selections):
         print(line)
 
     # Formatted data records of selected genes (FASTA in this case).
-    for line in ez.eapply(tool='fetch', db='gene', elems=elems,
+    for line in ez.eapply(tool='fetch', db='gene', selections=selections,
                           rettype='fasta'):
         print(line)
 
@@ -89,18 +90,18 @@ def sample_4():
     # Input: Entrez text query in database pubmed.
     query = 'asthma[mesh] AND leukotrienes[mesh] AND 2009[pdat]'
 
-    elems_pubmed = ez.eselect(tool='search', db='pubmed', term=query)
+    s_pubmed = ez.eselect(tool='search', db='pubmed', term=query)
 
-    elems_prot = ez.eselect(tool='link', dbfrom='pubmed', db='protein',
-                            elems=elems_pubmed, linkname='pubmed_protein',
-                            cmd='neighbor_history')
+    s_prot = ez.eselect(tool='link', dbfrom='pubmed', db='protein',
+                        previous=s_pubmed, linkname='pubmed_protein',
+                        cmd='neighbor_history')
 
     # Linked XML Document Summaries from database protein.
-    for line in ez.eapply(tool='summary', db='protein', elems=elems_prot):
+    for line in ez.eapply(tool='summary', db='protein', selections=s_prot):
         print(line)
 
     # Formatted data records of selected proteins (FASTA in this case).
-    for line in ez.eapply(tool='fetch', db='protein', elems=elems_prot,
+    for line in ez.eapply(tool='fetch', db='protein', selections=s_prot,
                           rettype='fasta'):
         print(line)
 
@@ -114,16 +115,16 @@ def sample_5():
     # Input: List of Entrez UIDs in database protein (protein GIs).
     id_list = '194680922,50978626,28558982,9507199,6678417'
 
-    elems_prot = ez.eselect(tool='post', db='protein', id=id_list)
+    s_prot = ez.eselect(tool='post', db='protein', id=id_list)
 
-    elems_gene = ez.eselect(tool='link', dbfrom='protein', db='gene',
-                            elems=elems_prot, linkname='protein_gene',
-                            cmd='neighbor_history')
+    s_gene = ez.eselect(tool='link', dbfrom='protein', db='gene',
+                        previous=s_prot, linkname='protein_gene',
+                        cmd='neighbor_history')
 
-    for line in ez.eapply(tool='summary', db='gene', elems=elems_gene):
+    for line in ez.eapply(tool='summary', db='gene', selections=s_gene):
         print(line)
 
-    for line in ez.eapply(tool='fetch', db='gene', elems=elems_gene,
+    for line in ez.eapply(tool='fetch', db='gene', selections=s_gene,
                           rettype='xml', retmode='xml'):
         print(line)
 
@@ -137,16 +138,16 @@ def sample_6():
     """
     id_list = '194680922,50978626,28558982,9507199,6678417'
 
-    elems = ez.eselect(tool='post', db='protein', id=id_list)
+    selections = ez.eselect(tool='post', db='protein', id=id_list)
 
     for line in ez.eapply(tool='search', db='protein', term='human[orgn]',
-                          elems=elems):
+                          selections=selections):
         print(line)
 
 # The way it is done in the original example, it would look like:
-#    query = '#%s AND human[orgn]' % elems['QueryKey']
+#    query = '#%s AND human[orgn]' % selections['QueryKey']
 #    for line in ez.equery(tool='search', db='protein', term=query,
-#                          WebEnv=elems['WebEnv'], usehistory='y'):
+#                          WebEnv=selections['WebEnv'], usehistory='y'):
 #        print(line)
 # which is definitely uglier :)
 
@@ -162,11 +163,13 @@ def sample_7():
     # Input: UIDs in database protein (protein GIs).
     id_list = '148596974,42544182,187937179,4557377,6678417'
 
-    elems = ez.eselect(tool='link', dbfrom='protein', db='gene', id=id_list,
-                       linkname='protein_gene', cmd='neighbor_history')
+    selections = ez.eselect(tool='link', dbfrom='protein', db='gene',
+                            id=id_list, linkname='protein_gene',
+                            cmd='neighbor_history')
 
     query = 'human[orgn] AND x[chr]'
-    for line in ez.eapply(tool='search', db='gene', term=query, elems=elems):
+    for line in ez.eapply(tool='search', db='gene', term=query,
+                          selections=selections):
         print(line)
 
 
