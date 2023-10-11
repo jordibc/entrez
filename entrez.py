@@ -220,7 +220,7 @@ class Nest:
         while True:
             if type(obj) == dict:
                 readline_set_completer(list(obj.keys()))
-            elif type(obj) == list:
+            else:  # list
                 readline_set_completer([str(i) for i in range(len(obj))])
 
             while True:
