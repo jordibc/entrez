@@ -61,7 +61,7 @@ _optional = {  # optional arguments for each tool
 # but it is missing some, like 'nucleotide'.
 
 
-def equery(tool='search', raw_params='', **params):
+def query(tool='search', raw_params='', **params):
     """Yield the response of a query with the given tool."""
     # First make some basic checks.
     assert tool in _tools, \
@@ -89,7 +89,7 @@ def equery(tool='search', raw_params='', **params):
         raise RuntimeError(f'On POST request to {url} with {data}: {e}')
 
 
-def eselect(tool, db, previous=None, **params):
+def select(tool, db, previous=None, **params):
     """Use tool on db to select elements and return dict for future queries."""
     # If there are previous elements selected, take them into account.
     if previous and 'WebEnv' in previous:
@@ -103,7 +103,7 @@ def eselect(tool, db, previous=None, **params):
 
     # Keep the values of WebEnv, QueryKey and Count in the selections dict.
     selections = {}
-    for line in equery(tool=tool, db=db, **params):
+    for line in query(tool=tool, db=db, **params):
         for k in ['WebEnv', 'QueryKey', 'Count']:
             if k not in selections and f'<{k}>' in line:
                 selections[k] = re.search(f'<{k}>(\\S+)</{k}>', line).groups()[0]
@@ -114,7 +114,7 @@ def eselect(tool, db, previous=None, **params):
     return selections
 
 
-def eapply(tool, db, selections, retmax=500, **params):
+def apply(tool, db, selections, retmax=500, **params):
     """Yield the results of applying tool on db for the selected elements.
 
     Apply tool on database db, for the selected elements (referenced
@@ -133,10 +133,10 @@ def eapply(tool, db, selections, retmax=500, **params):
     # Ask for the results of using tool over the selected elements, in
     # batches of retmax each.
     for retstart in range(0, int(selections.get('Count', '1')), retmax):
-        for line in equery(tool=tool, db=db,
-                           WebEnv=selections['WebEnv'],
-                           query_key=selections['QueryKey'],
-                           retstart=retstart, retmax=retmax, **params):
+        for line in query(tool=tool, db=db,
+                          WebEnv=selections['WebEnv'],
+                          query_key=selections['QueryKey'],
+                          retstart=retstart, retmax=retmax, **params):
             yield line
 
 
@@ -154,9 +154,9 @@ def on_search(term, db, tool, db2=None, **params):
       params: Extra parameters to use with the E-utility.
      """
     # Convenience function, it is used so often.
-    selections = eselect(tool='search', db=db, term=term)
-    for line in eapply(tool=tool, db=(db2 or db), selections=selections,
-                       **params):
+    selections = select(tool='search', db=db, term=term)
+    for line in apply(tool=tool, db=(db2 or db), selections=selections,
+                      **params):
         yield line
 
 

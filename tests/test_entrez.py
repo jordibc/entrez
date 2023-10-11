@@ -5,7 +5,7 @@ import entrez as ez
 
 
 def test_fetch():
-    data = ez.read_xml(ez.equery(tool='fetch', db='snp', id='3000'))
+    data = ez.read_xml(ez.query(tool='fetch', db='snp', id='3000'))
     summary = data['DocumentSummary']
 
     assert summary['GENES'] == {
