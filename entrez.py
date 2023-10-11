@@ -210,7 +210,7 @@ class Nest:
     def __len__(self):
         return len(self.obj)
 
-    def view(self):
+    def view(self, width=120, depth=4, compact=True, sort_dicts=False):
         """Interactive session to get subcomponents of the object."""
         readline_init()
 
@@ -223,30 +223,37 @@ class Nest:
             elif type(obj) == list:
                 readline_set_completer([str(i) for i in range(len(obj))])
 
-            print('\nSelection (you can use arrows, tab, Ctrl+r, etc.) '
-                  '(Ctrl+d exits, Enter views current selection):')
-            try:
-                prefix = "['%s'] " % ' '.join(path)
-                choice = input("%s> " % (prefix if path else ''))
-            except (EOFError, KeyboardInterrupt):
-                print()
-                return
+            while True:
+                print('\nSelection:')
 
-            if not choice:
-                pprint.pprint(obj)
-            else:
                 try:
-                    item = Nest(obj)[choice]
-                    path.append(choice)
+                    prefix = "['%s'] " % ' '.join(path)
+                    choice = input("%s> " % (prefix if path else ''))
+                except (EOFError, KeyboardInterrupt):
+                    print()
+                    return
 
-                    if type(item) != Nest:  # we are done, no more nesting
-                        print("Path: ['%s']" % ' '.join(path))
-                        print('Value:', item)
-                        return
+                if choice:
+                    break
 
-                    obj = item.obj
-                except KeyError:
-                    print(f'Nonexistent key: {choice}')
+                print()
+                pprint.pprint(obj, width=width, depth=depth, compact=compact,
+                              sort_dicts=sort_dicts)
+
+            try:
+                item = Nest(obj)[choice]
+                path.append(choice)
+
+                if type(item) != Nest:  # we are done, no more nesting
+                    print("Path: ['%s']" % ' '.join(path))
+                    print('Value:', item)
+                    return
+
+                obj = item.obj
+            except KeyError:
+                print(f'\nNonexistent key: {choice}')
+                print('You can select a key with the arrows, tab, Ctrl+r, etc. '
+                      'Exit with Ctrl+d. View current selection with Enter.')
 
             readline.clear_history()
 
