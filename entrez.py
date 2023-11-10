@@ -286,15 +286,20 @@ def readline_set_completer(names):
 
 
 def read_xml(xml):
-    """Return the given xml string as a python object."""
+    """Return the given xml string(s) as a python object."""
+    # Used to read a typical Entrez response, which can have several xmls.
     xml_str = xml if type(xml) == str else '\n'.join(xml)
 
-    try:
-        obj = xml_node_to_dict(ElementTree.XML(xml_str))
-    except ElementTree.ParseError:
-        obj = [xml_node_to_dict(ElementTree.XML(x))
-               for x in xml_str.splitlines()]
-    return Nest(obj)
+    # Separate all xmls (even if typically there is only one).
+    xmls = []
+    start, end = 0, xml_str.find('\n<?xml')
+    while end != -1:
+        xmls.append(xml_str[start:end])
+        start, end = end + 1, xml_str.find('\n<?xml', end + 1)
+    xmls.append(xml_str[start:])
+
+    obj = [xml_node_to_dict(ElementTree.XML(x)) for x in xmls]
+    return Nest(obj[0] if len(obj) == 1 else obj)
 
 
 def xml_node_to_dict(node):
