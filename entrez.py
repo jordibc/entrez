@@ -106,7 +106,8 @@ def select(tool, db, previous=None, **params):
     for line in query(tool=tool, db=db, **params):
         for k in ['WebEnv', 'QueryKey', 'Count']:
             if k not in selections and f'<{k}>' in line:
-                selections[k] = re.search(f'<{k}>(\\S+)</{k}>', line).groups()[0]
+                matches = re.search(f'<{k}>(\\S+)</{k}>', line)
+                selections[k] = matches.groups()[0]
 
     assert 'WebEnv' in selections and 'QueryKey' in selections, \
         f'Expected WebEnv and QueryKey in result of selection: {selections}'
