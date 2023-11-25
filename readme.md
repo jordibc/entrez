@@ -153,14 +153,14 @@ which will run all the functions that start with `test_` in the
 
 ## Extra documentation
 
-There is some more information in the [doc](doc) directory, and on the
+There is some more information in the
 [wiki](https://gitlab.com/jordibc/entrez/-/wikis/).
 
 
 ## License
 
 This program is licensed under the GPL v3. See the [project
-license](doc/license.md) for further details.
+license](license.md) for further details.
 
 
 ## Alternatives
