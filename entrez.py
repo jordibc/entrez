@@ -208,10 +208,25 @@ class Nest:
                 all(x == y for x, y in zip(self, wrap(value))))
 
     def __repr__(self):
-        return self.obj.__repr__()
+        return repr(self.obj)
 
     def __len__(self):
         return len(self.obj)
+
+    def keys(self):
+        if type(self.obj) == list:
+            return list(range(len(self.obj)))
+        else:
+            return list(self.obj.keys())
+
+    def values(self):
+        if type(self.obj) == list:
+            return self.obj
+        else:
+            return list(self.obj.values())
+
+    def items(self):
+        return zip(self.keys(), self.values())
 
     def view(self, width=120, depth=4, compact=True, sort_dicts=False):
         """Interactive session to get subcomponents of the object."""
