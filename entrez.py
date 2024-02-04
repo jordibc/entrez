@@ -1,5 +1,7 @@
 """
-Simple interface to the amazing NCBI databases (Entrez).
+Simple python interface to the NCBI databases (Entrez).
+
+See https://www.ncbi.nlm.nih.gov/books/NBK25500/
 """
 
 # Useful references (at https://www.ncbi.nlm.nih.gov/books):
