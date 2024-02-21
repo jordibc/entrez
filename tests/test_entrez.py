@@ -42,13 +42,11 @@ def test_on_search():
 
     assert [x['Item'] for x in results['0 DocSum Item-group']] == [
         {'@Name': 'Caption', '@Type': 'String', 'text': 'NC_010611'},
-        {'@Name': 'Title', '@Type': 'String',
-         'text': 'Acinetobacter baumannii ACICU, complete sequence'},
-        {'@Name': 'Extra', '@Type': 'String',
-         'text': 'gi|184156320|ref|NC_010611.1|[184156320]'},
+        {'@Name': 'Title', '@Type': 'String', 'text': 'Acinetobacter baumannii ACICU, complete sequence'},
+        {'@Name': 'Extra', '@Type': 'String', 'text': 'gi|184156320|ref|NC_010611.1|[184156320]'},
         {'@Name': 'Gi', '@Type': 'Integer', 'text': '184156320'},
         {'@Name': 'CreateDate', '@Type': 'String', 'text': '2008/04/21'},
-        {'@Name': 'UpdateDate', '@Type': 'String', 'text': '2022/11/04'},
+        {'@Name': 'UpdateDate', '@Type': 'String', 'text': '2023/11/23'},
         {'@Name': 'Flags', '@Type': 'Integer', 'text': '800'},
         {'@Name': 'TaxId', '@Type': 'Integer', 'text': '405416'},
         {'@Name': 'Length', '@Type': 'Integer', 'text': '3904116'},
