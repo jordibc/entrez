@@ -46,22 +46,7 @@ def main():
     url_info = f'{args.urlbase}?CMD=Get&FORMAT_OBJECT=SearchInfo&RID={rid}'
     print(f'Checking every {args.wait} s the status at {url_info}')
 
-    while True:
-        print('.', end='')  # just to show the passage of time
-        sys.stdout.flush()
-
-        req_info = requests.get(url_info)
-
-        status = get_value(req_info, 'Status')
-
-        if status == 'READY':
-            print('\nThe results are ready!')
-            break
-        elif status == 'WAITING':
-            time.sleep(args.wait)
-        else:
-            print()
-            sys.exit(f'Finished with status: {status}')
+    check_periodically(url_info, args.wait)
 
     url_results = f'{args.urlbase}?CMD=Get&FORMAT_TYPE={args.format}&RID={rid}'
     print(f'Retrieving results from {url_results}')
@@ -100,6 +85,24 @@ def get_args():
 def get_value(response, key):
     # All the values we care for appear in the responses as "<key> = <value>".
     return re.findall(f'{key} ?= ?(.*)', response.text)[0]
+
+
+def check_periodically(url, wait=5):
+    """Keep checking the status from the given url until we have results."""
+    status = None
+    while status != 'READY':
+        print('.', end='')  # just to show the passage of time
+        sys.stdout.flush()
+
+        status = get_value(requests.get(url), 'Status')
+
+        if status == 'WAITING':
+            time.sleep(wait)
+        elif status != 'READY':
+            print()
+            sys.exit(f'Finished with status: {status}')
+
+    print('\nThe results are ready!')
 
 
 
