@@ -37,8 +37,8 @@ def main():
 
     req_query = requests.post(url_noquery + requests.utils.quote(fastas))
 
-    rid = extract(req_query, 'RID = (.*)')  # request id
-    rtoe = extract(req_query, 'RTOE = (.*)')  # estimated time to completion
+    rid = re.findall('RID = (.*)', req_query.text)[0]  # request id
+    rtoe = re.findall('RTOE = (.*)', req_query.text)[0]  # estimated wait time
 
     print(f'Got a request id {rid}. Estimated wait of {rtoe} s. Waiting.')
     time.sleep(int(rtoe))  # wait for search to complete
@@ -51,8 +51,15 @@ def main():
     url_results = f'{args.urlbase}?CMD=Get&FORMAT_TYPE={args.format}&RID={rid}'
     print(f'Retrieving results from {url_results}')
 
-    results = extract(requests.get(url_results), '<PRE>(.*)</PRE>', flags=re.S)
+    results = requests.get(url_results).text.strip()  # get the results
 
+    # Clear the text for certain formats that return ugly text.
+    if args.format == 'Tabular':  # the actual result is between <PRE></PRE>
+        results = re.findall('<PRE>(.*)</PRE>', results, re.S)[0].rstrip()
+    elif args.format == 'Text':  # the actual result is just after <PRE>
+        results = re.findall('<PRE>(.*)', results, re.S)[0].rstrip()
+
+    # Save to file or print on screen the results.
     if args.output is not None:
         open(args.output, 'wt').write(results)
         print(f'Results written to: {args.output}')
@@ -82,11 +89,6 @@ def get_args():
     return parser.parse_args()
 
 
-def extract(response, regex, flags=0):
-    """Extract from the response the first group in the given regex."""
-    return re.findall(regex, response.text, flags)[0]
-
-
 def check_periodically(url, wait=5):
     """Keep checking the status from the given url until we have results."""
     status = None
@@ -94,7 +96,7 @@ def check_periodically(url, wait=5):
         print('.', end='')  # just to show the passage of time
         sys.stdout.flush()
 
-        status = extract(requests.get(url), 'Status=(.*)')
+        status = re.findall('Status=(.*)', requests.get(url).text)[0]
 
         if status == 'WAITING':
             time.sleep(wait)
