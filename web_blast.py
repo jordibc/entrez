@@ -37,8 +37,8 @@ def main():
 
     req_query = requests.post(url_noquery + requests.utils.quote(fastas))
 
-    rid = get_value(req_query, 'RID')  # request id
-    rtoe = get_value(req_query, 'RTOE')  # estimated time to completion
+    rid = extract(req_query, 'RID = (.*)')  # request id
+    rtoe = extract(req_query, 'RTOE = (.*)')  # estimated time to completion
 
     print(f'Got a request id {rid}. Estimated wait of {rtoe} s. Waiting.')
     time.sleep(int(rtoe))  # wait for search to complete
@@ -51,7 +51,7 @@ def main():
     url_results = f'{args.urlbase}?CMD=Get&FORMAT_TYPE={args.format}&RID={rid}'
     print(f'Retrieving results from {url_results}')
 
-    results = requests.get(url_results).text
+    results = extract(requests.get(url_results), '<PRE>(.*)</PRE>', flags=re.S)
 
     if args.output is not None:
         open(args.output, 'wt').write(results)
@@ -82,9 +82,9 @@ def get_args():
     return parser.parse_args()
 
 
-def get_value(response, key):
-    # All the values we care for appear in the responses as "<key> = <value>".
-    return re.findall(f'{key} ?= ?(.*)', response.text)[0]
+def extract(response, regex, flags=0):
+    """Extract from the response the first group in the given regex."""
+    return re.findall(regex, response.text, flags)[0]
 
 
 def check_periodically(url, wait=5):
@@ -94,7 +94,7 @@ def check_periodically(url, wait=5):
         print('.', end='')  # just to show the passage of time
         sys.stdout.flush()
 
-        status = get_value(requests.get(url), 'Status')
+        status = extract(requests.get(url), 'Status=(.*)')
 
         if status == 'WAITING':
             time.sleep(wait)
