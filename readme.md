@@ -131,6 +131,21 @@ ez.API_KEY = 'ABCD123'
 ```
 
 
+## Web blast
+
+There is also a small tool to perform web searches with
+[BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) (Basic Local
+Alignment Search Tool) at the NCBI, called `web_blast.py`.
+
+For example, if you want to perform a blast search on the
+"non-redundant" database for the protein sequences that you have in a
+file named `sequences.fasta`, you can write:
+
+```sh
+./web_blast.py --program blastp --database nr --format Tabular sequences.fasta
+```
+
+
 ## Tests
 
 You can run the tests in the `tests` directory with:
