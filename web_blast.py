@@ -24,6 +24,7 @@ def main():
                    f'&DATABASE={args.database}&QUERY=')
 
     print(f'Making request to {url_noquery}[...]')  # show url without the query
+
     req_query = requests.post(url_noquery + requests.utils.quote(fastas))
 
     rid = get_value(req_query, 'RID')  # request id
@@ -42,6 +43,7 @@ def main():
         req_info = requests.get(url_info)
 
         status = get_value(req_info, 'Status')
+
         if status == 'READY':
             print('\nThe results are ready!')
             break
@@ -53,6 +55,7 @@ def main():
 
     url_results = f'{args.urlbase}?CMD=Get&FORMAT_TYPE={args.format}&RID={rid}'
     print(f'Retrieving results from {url_results}')
+
     results = requests.get(url_results).text
 
     if args.output is not None:
@@ -84,7 +87,9 @@ def get_args():
 
 
 def get_value(response, key):
+    # All the values we care for appear in the responses as "<key> = <value>".
     return re.findall(f'{key} ?= ?(.*)', response.text)[0]
+
 
 
 if __name__ == '__main__':
