@@ -35,7 +35,7 @@ _required = {  # required arguments for each tool
     'post': {'db', 'id'},
     'summary': {'db'},
     'fetch': {'db'},
-    'link': {'db', 'dbfrom', 'cmd'},
+    'link': {'db', 'dbfrom'},
     'gquery': {'term'},
     'spell': {'db', 'term'},
     'citmatch': {'db', 'rettype' 'bdata'}}
@@ -50,7 +50,7 @@ _optional = {  # optional arguments for each tool
                 'retmode', 'version'},
     'fetch': {'id', 'query_key', 'WebEnv', 'retstart', 'retmax', 'rettype',
               'retmode', 'strand', 'seq_start', 'seq_stop', 'complexity'},
-    'link': {'id', 'query_key', 'WebEnv', 'retmode', 'idtype', 'linkname',
+    'link': {'id', 'query_key', 'WebEnv', 'retmode', 'idtype', 'linkname', 'cmd',
              'term', 'holding', 'datetype', 'reldate', 'mindate', 'maxdate'},
     'gquery': {},
     'spell': {},
