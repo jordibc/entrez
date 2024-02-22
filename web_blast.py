@@ -26,7 +26,11 @@ def main():
     # The "query" will be the contents of all the given fasta files.
     fastas = ''.join(open(fname).read() for fname in args.fasta_files)
 
-    url_noquery = (f'{args.urlbase}?CMD=Put&PROGRAM={args.program}'
+    replacements = {'megablast': 'blastn&MEGABLAST=on',
+                    'rpsblast': 'blastp&SERVICE=rpsblast'}
+    program_str = replacements.get(args.program, args.program)
+
+    url_noquery = (f'{args.urlbase}?CMD=Put&PROGRAM={program_str}'
                    f'&DATABASE={args.database}&QUERY=')
 
     print(f'Making request to {url_noquery}[...]')  # show url without the query
@@ -79,7 +83,8 @@ def get_args():
     add('fasta_files', metavar='FASTA_FILE', nargs='+',
         help='fasta file(s) with sequences to query')
     add('-p', '--program', default='blastn', help='blast program to use',
-        choices=['blastn', 'blastp', 'blastx', 'tblastn', 'tblastx'])
+        choices=['blastn', 'blastp', 'blastx', 'tblastn', 'tblastx',
+                 'megablast', 'rpsblast'])
     add('-d', '--database', default='nr',
         help='database to query ("nr", "refseq_representative_genomes", etc.)')
     add('-f', '--format', default='Text', help='format for the output',
