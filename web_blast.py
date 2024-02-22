@@ -46,7 +46,7 @@ def main():
     url_info = f'{args.urlbase}?CMD=Get&FORMAT_OBJECT=SearchInfo&RID={rid}'
     print(f'Checking every {args.wait} s the status at {url_info}')
 
-    check_periodically(url_info, args.wait)
+    check_periodically(url_info, args.wait)  # check until the results are ready
 
     url_results = f'{args.urlbase}?CMD=Get&FORMAT_TYPE={args.format}&RID={rid}'
     print(f'Retrieving results from {url_results}')
@@ -55,9 +55,9 @@ def main():
 
     # Clear the text for certain formats that return ugly text.
     if args.format == 'Tabular':  # the actual result is between <PRE></PRE>
-        results = re.findall('<PRE>(.*)</PRE>', results, re.S)[0].rstrip()
+        results = re.findall('<PRE>(.*)</PRE>', results, re.S)[0].strip()
     elif args.format == 'Text':  # the actual result is just after <PRE>
-        results = re.findall('<PRE>(.*)', results, re.S)[0].rstrip()
+        results = re.findall('<PRE>(.*)', results, re.S)[0].strip()
 
     # Save to file or print on screen the results.
     if args.output is not None:
