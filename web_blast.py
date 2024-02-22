@@ -2,10 +2,16 @@
 
 """
 Make a blast query using the NCBI web API.
-"""
 
-# Based on web_blast.pl from NCBI.
-# For more info on the api, see https://ncbi.github.io/blast-cloud/dev/api.html
+Based on web_blast.pl from NCBI, which is public domain.
+For more info on the api, see https://ncbi.github.io/blast-cloud/dev/api.html
+
+Please do not submit or retrieve more than one request every two seconds.
+
+Results will be kept at NCBI for 24 hours. For best batch performance, they
+recommend that you submit requests after 20:00 EST (1:00 GMT) and retrieve
+results before 5:00 EST (10:00 GMT).
+"""
 
 import sys
 import re
