@@ -32,7 +32,7 @@ but `apply` has a simpler syntax):
 Finally, `on_search` is a convenience function that combines the
 results of a `select` on an `apply`, which is a very common case.
 
-* `on_search(term, db, tool[, db2, ...])` - yields the response of applying a
+* `on_search(term, db, tool[, dbfrom, ...])` - yields the response of applying a
    tool over the results of a search query (of term in database db)
 
 The data often comes as xml. For convenience, there is also the

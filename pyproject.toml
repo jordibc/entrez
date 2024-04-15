@@ -1,7 +1,7 @@
 [project]
 name = "entrez"
 description = "Python interface to the Entrez query and database system at the NCBI"
-version = "1.0.0"
+version = "1.1.0"
 authors = [
   { name="Jordi Burguet-Castell", email="jordi.burguet.castell@gmail.com" },
   { name="Jose Manuel Martí", email="jse.mnl@gmail.com" },

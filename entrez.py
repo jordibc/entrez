@@ -136,14 +136,13 @@ def apply(tool, db, selections, retmax=500, **params):
     # Ask for the results of using tool over the selected elements, in
     # batches of retmax each.
     for retstart in range(0, int(selections.get('Count', '1')), retmax):
-        for line in query(tool=tool, db=db,
-                          WebEnv=selections['WebEnv'],
-                          query_key=selections['QueryKey'],
-                          retstart=retstart, retmax=retmax, **params):
-            yield line
+        yield from query(tool=tool, db=db,
+                         WebEnv=selections['WebEnv'],
+                         query_key=selections['QueryKey'],
+                         retstart=retstart, retmax=retmax, **params)
 
 
-def on_search(term, db, tool, db2=None, **params):
+def on_search(term, db, tool, dbfrom=None, **params):
     """Yield the results of querying db with term, and using tool over them.
 
     Select (search) the elements in database db that satisfy the query
@@ -151,16 +150,14 @@ def on_search(term, db, tool, db2=None, **params):
 
     Args:
       term: Query term that selects elements to process later.
-      db: Database where the query is done.
+      db: Database where tool is applied.
       tool: E-utility that is used on the selected elements.
-      db2: Database where tool is applied. If None, it's the same as db.
+      dbfrom: Database where the query is done. If None, it's the same as db.
       params: Extra parameters to use with the E-utility.
-     """
+    """
     # Convenience function, it is used so often.
-    selections = select(tool='search', db=db, term=term)
-    for line in apply(tool=tool, db=(db2 or db), selections=selections,
-                      **params):
-        yield line
+    selections = select(tool='search', db=(dbfrom or db), term=term)
+    yield from apply(tool=tool, db=db, selections=selections, **params)
 
 
 # Convenient translations.
