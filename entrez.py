@@ -143,10 +143,11 @@ def apply(tool, db, selections, retmax=500, **params):
 
 
 def on_search(term, db, tool, dbfrom=None, **params):
-    """Yield the results of querying db with term, and using tool over them.
+    """Yield the results of searching db with term, and using tool over them.
 
-    Select (search) the elements in database db that satisfy the query
-    in term, and yield the output of applying the given tool on them.
+    Select (search) the elements in database dbfrom (or db if not
+    specified) that satisfy the query in term, and yield the output of
+    applying the given tool on them.
 
     Args:
       term: Query term that selects elements to process later.
