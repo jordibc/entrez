@@ -42,13 +42,16 @@ resembling the original structure of the data.
 
 ## Installation
 
-You can run from this directory without installing anything, or simply
-put `entrez.py` in a place where your python interpreter can find it
-(for example, you can add this directory to your
+You can download this repository and run from its directory without
+installing anything, or simply put `entrez.py` in a place where your
+python interpreter can find it (for example, you can add its
+directory to your
 [PYTHONPATH](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)).
 
-Really. There is no need to `pip install` anything (but if you want,
-you can `pip install -e .`). Everything is in just one file.
+It is that easy, really; everything is in just one file. There is no
+need to `pip install` anything (but if you want, you can also run `pip
+install -e .` from its directory to add entrez to your virtual
+environment, conda environment, etc.).
 
 
 ## Examples
