@@ -23,48 +23,42 @@ import requests
 def main():
     args = get_args()
 
-    # The "query" will be the contents of all the given fasta files.
-    fastas = ''.join(open(fname).read() for fname in args.fasta_files)
+    try:
+        rid, rtoe = send_query(args.fasta_files, args.program,
+                               args.urlbase, args.database)
+        print(f'Got a request id {rid}. Estimated wait of {rtoe} s. Waiting.')
 
-    replacements = {'megablast': 'blastn&MEGABLAST=on',
-                    'rpsblast': 'blastp&SERVICE=rpsblast'}
-    program_str = replacements.get(args.program, args.program)
+        time.sleep(rtoe)  # wait for search to complete
 
-    url_noquery = (f'{args.urlbase}?CMD=Put&PROGRAM={program_str}'
-                   f'&DATABASE={args.database}&QUERY=')
+        url_info = f'{args.urlbase}?CMD=Get&FORMAT_OBJECT=SearchInfo&RID={rid}'
+        print(f'Checking every {args.wait} s the status at {url_info}')
 
-    print(f'Making request to {url_noquery}[...]')  # show url without the query
+        check_periodically(url_info, args.wait)  # check until we have results
 
-    req_query = requests.post(url_noquery + requests.utils.quote(fastas))
+        url_results = f'{args.urlbase}?CMD=Get&FORMAT_TYPE={args.format}&RID={rid}'
+        print(f'Retrieving results from {url_results}')
 
-    rid = re.findall('RID = (.*)', req_query.text)[0]  # request id
-    rtoe = re.findall('RTOE = (.*)', req_query.text)[0]  # estimated wait time
+        results = requests.get(url_results).text.strip()  # get the results
 
-    print(f'Got a request id {rid}. Estimated wait of {rtoe} s. Waiting.')
-    time.sleep(int(rtoe))  # wait for search to complete
+        output_results(results, args.format, args.output)
 
-    url_info = f'{args.urlbase}?CMD=Get&FORMAT_OBJECT=SearchInfo&RID={rid}'
-    print(f'Checking every {args.wait} s the status at {url_info}')
+    except (OSError, RuntimeError) as e:
+        sys.exit(e)
+    except (IndexError, ValueError) as e:
+        sys.exit(f'The last request failed ('
+                 f'is {args.urlbase} working? '
+                 f'are your fasta files correct {args.fasta_files[:5]}? '
+                 f'is the blast program "{args.program}" the correct one? '
+                 f'is the database "{args.database}" the one you meant?)')
+    except requests.exceptions.ConnectionError as e:
+        try:
+            message = 'Failed to connect: ' + e.args[0].reason.args[0]
+        except:
+            url = (e.request.url if len(e.request.url) < 80 else
+                   (e.request.url[:75] + '[...]'))
+            message = 'Failed to connect to ' + url
 
-    check_periodically(url_info, args.wait)  # check until the results are ready
-
-    url_results = f'{args.urlbase}?CMD=Get&FORMAT_TYPE={args.format}&RID={rid}'
-    print(f'Retrieving results from {url_results}')
-
-    results = requests.get(url_results).text.strip()  # get the results
-
-    # Clear the text for certain formats that return ugly text.
-    if args.format == 'Tabular':  # the actual result is between <PRE></PRE>
-        results = re.findall('<PRE>(.*)</PRE>', results, re.S)[0].strip()
-    elif args.format == 'Text':  # the actual result is just after <PRE>
-        results = re.findall('<PRE>(.*)', results, re.S)[0].strip()
-
-    # Save to file or print on screen the results.
-    if args.output is not None:
-        open(args.output, 'wt').write(results)
-        print(f'Results written to: {args.output}')
-    else:
-        print(results)
+        sys.exit(message)
 
 
 def get_args():
@@ -89,6 +83,28 @@ def get_args():
     return parser.parse_args()
 
 
+def send_query(fasta_files, program, urlbase, database):
+    """Send query with contents of fasta files and return rid and rtoe."""
+    # The "query" will be the contents of all the given fasta files.
+    fastas = ''.join(open(fname).read() for fname in fasta_files)
+
+    replacements = {'megablast': 'blastn&MEGABLAST=on',
+                    'rpsblast': 'blastp&SERVICE=rpsblast'}
+    program_str = replacements.get(program, program)
+
+    url_noquery = (f'{urlbase}?CMD=Put&PROGRAM={program_str}'
+                   f'&DATABASE={database}&QUERY=')
+
+    print(f'Making request to {url_noquery}[...]')  # show url without the query
+
+    req_query = requests.post(url_noquery + requests.utils.quote(fastas))
+
+    rid = re.findall('RID = (.*)', req_query.text)[0]  # request id
+    rtoe = re.findall('RTOE = (.*)', req_query.text)[0]  # estimated wait time
+
+    return rid, int(rtoe)
+
+
 def check_periodically(url, wait=5):
     """Keep checking the status from the given url until we have results."""
     status = None
@@ -105,6 +121,25 @@ def check_periodically(url, wait=5):
             sys.exit(f'Finished with status: {status}')
 
     print('\nThe results are ready!')
+
+
+def output_results(results, fmt, output):
+    """Output the results text, having the given format, to file or screen."""
+    try:
+        # Clear the text for certain formats that return ugly text.
+        if fmt == 'Tabular':  # the actual result is between <PRE></PRE>
+            results = re.findall('<PRE>(.*)</PRE>', results, re.S)[0].strip()
+        elif fmt == 'Text':  # the actual result is just after <PRE>
+            results = re.findall('<PRE>(.*)', results, re.S)[0].strip()
+    except IndexError as e:
+        raise RuntimeError(f'Output format of results looks wrong: {results}')
+
+    # Save to file or print on screen the results.
+    if output is not None:
+        open(output, 'wt').write(results)
+        print(f'Results written to: {output}')
+    else:
+        print(results)
 
 
 
