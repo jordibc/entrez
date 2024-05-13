@@ -118,7 +118,7 @@ def check_periodically(url, wait=5):
             time.sleep(wait)
         elif status != 'READY':
             print()
-            sys.exit(f'Finished with status: {status}')
+            raise RuntimeError(f'Finished with status: {status}')
 
     print('\nThe results are ready!')
 
