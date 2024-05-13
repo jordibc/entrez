@@ -42,7 +42,7 @@ def main():
 
         output_results(results, args.format, args.output)
 
-    except (OSError, RuntimeError) as e:
+    except (OSError, RuntimeError, KeyboardInterrupt) as e:
         sys.exit(e)
     except (IndexError, ValueError) as e:
         sys.exit(f'The last request failed ('
