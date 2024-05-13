@@ -67,7 +67,7 @@ def get_args():
 
     add = parser.add_argument  # shortcut
     add('fasta_files', metavar='FASTA_FILE', nargs='+',
-        help='fasta file(s) with sequences to query')
+        help='fasta file with sequences to query')
     add('-p', '--program', default='blastn', help='blast program to use',
         choices=['blastn', 'blastp', 'blastx', 'tblastn', 'tblastx',
                  'megablast', 'rpsblast'])
