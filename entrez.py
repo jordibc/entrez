@@ -30,7 +30,7 @@ _tools = {  # valid tools
     'citmatch'}
 
 _required = {  # required arguments for each tool
-    'info': {},
+    'info': set(),
     'search': {'db', 'term'},
     'post': {'db', 'id'},
     'summary': {'db'},
@@ -52,9 +52,9 @@ _optional = {  # optional arguments for each tool
               'retmode', 'strand', 'seq_start', 'seq_stop', 'complexity'},
     'link': {'id', 'query_key', 'WebEnv', 'retmode', 'idtype', 'linkname', 'cmd',
              'term', 'holding', 'datetype', 'reldate', 'mindate', 'maxdate'},
-    'gquery': {},
-    'spell': {},
-    'citmatch': {}}
+    'gquery': set(),
+    'spell': set(),
+    'citmatch': set()}
 # For all the available arguments/parameters, see:
 # https://www.ncbi.nlm.nih.gov/books/NBK25499/
 
