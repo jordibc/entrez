@@ -13,48 +13,55 @@ biomedical data, including nucleotide and protein sequences, gene
 records, three-dimensional molecular structures, and the biomedical
 literature.
 
-The main function (and the only essential one) is:
+
+## 📋 Features
+
+The main function is:
 
 * `query(tool[, ...])` - yields the response of a query with the given tool
 
-The function `select` makes a selection of elements on the server,
-that can be referenced later for future queries (instead of
-downloading a long list of ids that then we would have to send to the
-server again). The function `apply` can then run a tool using a
-previous selection of elements (which can be done with `query` too,
-but `apply` has a simpler syntax):
+There are a few more functions for convenience:
 
 * `select(tool, db[, ...])` - returns a dict that references the elements
    selected with tool over database db
 * `apply(tool, db, selections[, retmax, ...])` - yields the response of
    applying a tool on db for the selected elements
+* `on_search(term, db, tool[, dbfrom, ...])` - yields the response of applying a
+   tool over the results of a search query (of the given term in database db)
 
-Finally, `on_search` is a convenience function that combines the
+If we want to select many elements and do further queries on them, we
+could get a long list of ids that we would have to upload in the next
+query. Instead of that, we can use the function `select(...)` to make
+a selection of elements on the server, that can be referenced later
+for future queries. It returns a dictionary with the necessary
+information to refer to the selection in the server.
+
+The function `apply(...)` can get that dictionary in its `selections`
+argument. It then runs a tool using those selected elements.
+
+Finally, `on_search(...)` is a convenience function that combines the
 results of a `select` on an `apply`, which is a very common case.
 
-* `on_search(term, db, tool[, dbfrom, ...])` - yields the response of applying a
-   tool over the results of a search query (of term in database db)
+
+### XML parsing
 
 The data often comes as xml. For convenience, there is also the
-function `read_xml` that converts it to a python object closely
+function `read_xml(...)` that converts it to a Python object closely
 resembling the original structure of the data.
 
 
-## Installation
+## 📥 Installation
 
-You can download this repository and run from its directory without
-installing anything, or simply put `entrez.py` in a place where your
-python interpreter can find it (for example, you can add its
+You can download this repository and run from there without
+installing anything. Or simply put `entrez.py` in a place where your
+Python interpreter can find it (for example, you can add its
 directory to your
 [PYTHONPATH](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)).
 
-It is that easy, really; everything is in just one file. There is no
-need to `pip install` anything (but if you want, you can also run `pip
-install -e .` from its directory to add entrez to your virtual
-environment, conda environment, etc.).
+It is that easy, really. There is no need to `pip install` anything.
 
 
-## Examples
+## 💡 Examples
 
 Fetch information for SNP with id 3000, as in the example at
 https://www.ncbi.nlm.nih.gov/projects/SNP/SNPeutils.htm:
@@ -102,7 +109,7 @@ uses the library to convert accession numbers into GIs, and
 accession numbers for a given SRA study.
 
 
-## Email and API keys
+## 📡 Email and API keys
 
 The NCBI now asks for all requests to include `email` as a parameter,
 with the email address of the user making the request (see their
@@ -134,7 +141,28 @@ ez.API_KEY = 'ABCD123'
 ```
 
 
-## Web blast
+## 👾 Etool
+
+There is a script to run the queries directly from the command line,
+called `etool.py`.
+
+For the examples above, the equivalent calls would be:
+
+```sh
+./etool.py fetch --db snp --id 3000
+```
+
+and
+
+```sh
+./etool.py summary --on-search --db nucleotide \
+    --term 'NC_010611.1[accn] OR EU477409.1[accn]'
+```
+
+For xml outputs, the `--parse-xml` argument is particularly useful. 😉
+
+
+## 👾 Web blast
 
 There is also a small tool to perform web searches with
 [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) (Basic Local
@@ -149,7 +177,7 @@ file named `sequences.fasta`, you can write:
 ```
 
 
-## Tests
+## ⏱️ Tests
 
 You can run the tests in the `tests` directory with:
 
@@ -161,7 +189,7 @@ which will run all the functions that start with `test_` in the
 `test_*.py` files.
 
 
-## References
+## 📚 References
 
 * [Introduction to the E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
 * [Retrieving large datasets](https://www.ncbi.nlm.nih.gov/books/NBK25498/#chapter3.Application_3_Retrieving_large)
@@ -169,21 +197,21 @@ which will run all the functions that start with `test_` in the
 * [API keys](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
 
 
-## Extra documentation
+## 📖 Extra documentation
 
 There is some more information in the
 [wiki](https://gitlab.com/jordibc/entrez/-/wikis/).
 
 
-## License
+## ⚖️ License
 
 This program is licensed under the GPL v3. See the [project
 license](license.md) for further details.
 
 
-## Alternatives
+## 👀 Alternatives
 
-When I initially wrote this module (circa 2016) there were no python
+When I initially wrote this module (circa 2016) there were no Python
 alternatives (that I could find). That also explains why I chose to
 name it simply "entrez". Thanks to a more recent module,
 [easy-entrez](https://pypi.org/project/easy-entrez/), here is a
