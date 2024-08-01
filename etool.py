@@ -49,7 +49,8 @@ def main():
         else:
             parsed = ez.read_xml(result)
             if out.isatty():
-                print('\nResults parsed. '
+                print('\nResults parsed. Save to file or redirect output '
+                      'for non-interactive results.\n\n'
                       'You can select a key with the arrows, tab, Ctrl+r, etc. '
                       'Exit with Ctrl+d. View current selection with Enter.')
                 parsed.view()  # interactive view
