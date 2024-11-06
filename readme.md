@@ -1,11 +1,14 @@
-# Entrez - Call the NCBI E-utilities from Python
+# 😵 Deprecation Warning
 
-**Deprecation Warning**: These tools use the [now-deprecated API
+These tools use the [now-deprecated API
 v1](https://www.ncbi.nlm.nih.gov/datasets/docs/v1/troubleshooting/faq/)
 (deprecated in June 2024, retired in December 2024). You can instead
 use the [NCBI Datasets command-line
 tools](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/download-and-install/)
 or their [v2 API](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/api/).
+
+
+# Entrez - Call the NCBI E-utilities from Python
 
 A simple Python interface to **query the biological databases** kept
 at the NCBI.
