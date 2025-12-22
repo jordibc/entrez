@@ -172,8 +172,8 @@ class Nest:
         self.obj = obj
 
     def __getitem__(self, key):
-        if type(self.obj) == list:
-            if type(key) == int:
+        if type(self.obj) is list:
+            if type(key) is int:
                 return wrap(self.obj[key])
 
             try:
@@ -194,8 +194,14 @@ class Nest:
             except (ValueError, KeyError):
                 raise KeyError(key)
 
+    def get(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError as e:
+            return default
+
     def __iter__(self):
-        if type(self.obj) == list:
+        if type(self.obj) is list:
             for obj in self.obj:
                 yield wrap(obj)
         else:
@@ -214,13 +220,13 @@ class Nest:
         return len(self.obj)
 
     def keys(self):
-        if type(self.obj) == list:
+        if type(self.obj) is list:
             return list(range(len(self.obj)))
         else:
             return list(self.obj.keys())
 
     def values(self):
-        if type(self.obj) == list:
+        if type(self.obj) is list:
             return self.obj
         else:
             return list(self.obj.values())
@@ -236,7 +242,7 @@ class Nest:
         path = []  # path to the currently selected subcomponent
 
         while True:
-            if type(obj) == dict:
+            if type(obj) is dict:
                 readline_set_completer(list(obj.keys()))
             else:  # list
                 readline_set_completer([str(i) for i in range(len(obj))])
@@ -304,7 +310,7 @@ def readline_set_completer(names):
 def read_xml(xml):
     """Return the given xml string(s) as a python object."""
     # Used to read a typical Entrez response, which can have several xmls.
-    xml_str = xml if type(xml) == str else '\n'.join(xml)
+    xml_str = xml if type(xml) is str else '\n'.join(xml)
 
     # Separate all xmls (even if typically there is only one).
     xmls = []
